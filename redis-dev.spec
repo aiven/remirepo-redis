@@ -20,15 +20,15 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global prever       RC2
-%global gh_commit    8226f2c3a717649788dc5f06c4d9ebdfbe8bb9c9
+%global prever       RC3
+%global gh_commit    51b12ed1b5dccd6234e0dc1d3f76996420bcf5a9
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
 
 Name:             redis
 Version:          4.0.0
-Release:          0.2.%{prever}%{?dist}
+Release:          0.3.%{prever}%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -150,6 +150,10 @@ make %{?_smp_mflags} V=1 \
 
 %check
 %if %{with_tests}
+# ERR Active defragmentation cannot be enabled: it requires a Redis server compiled
+# with a modified Jemalloc like the one shipped by default with the Redis source distribution
+sed -e '/memefficiency/d' -i tests/test_helper.tcl
+
 make test
 make test-sentinel
 %else
@@ -269,6 +273,9 @@ fi
 
 
 %changelog
+* Mon Apr 24 2017 Remi Collet <remi@fedoraproject.org> - 4.0.0-0.3.RC3
+- update to 4.0.0-RC3 (3.9.103)
+
 * Tue Dec  6 2016 Remi Collet <remi@fedoraproject.org> - 4.0.0-0.2.RC2
 - update to 4.0.0-RC2 (3.9.102)
 
