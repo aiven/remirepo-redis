@@ -28,7 +28,7 @@
 
 Name:             redis
 Version:          4.0.0
-Release:          0.3.%{prever}%{?dist}
+Release:          0.4.%{prever}%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -58,10 +58,7 @@ Patch3:           %{name}-pr3491.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch4:           %{name}-pr3494.patch
 
-BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%if !0%{?el5}
 BuildRequires:    tcl >= 8.5
-%endif
 BuildRequires:    jemalloc-devel
 
 # Required for redis-shutdown
@@ -244,7 +241,6 @@ fi
 
 
 %files
-%defattr(-,root,root,-)
 %{!?_licensedir:%global license %%doc}
 %license COPYING
 %doc 00-RELEASENOTES BUGS CONTRIBUTING MANIFESTO README.md
@@ -273,6 +269,11 @@ fi
 
 
 %changelog
+* Sat Jun 24 2017 Remi Collet <remi@remirepo.net> - 4.0.0-0.4.RC3
+- rebuild with some fedora changes:
+ - Add RuntimeDirectory=redis to systemd unit file (RHBZ #1454700)
+ - Fix a shutdown failure with Unix domain sockets (RHBZ #1444988)
+
 * Mon Apr 24 2017 Remi Collet <remi@fedoraproject.org> - 4.0.0-0.3.RC3
 - update to 4.0.0-RC3 (3.9.103)
 
