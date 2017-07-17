@@ -20,22 +20,22 @@
 %global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-#global prever       rc3
-%global gh_commit    d5dab73127a3f02cf5c4964c66a6c7c7147b9dc0
+#global prever       RC3
+%global gh_commit    51b12ed1b5dccd6234e0dc1d3f76996420bcf5a9
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
 
 Name:             redis
-Version:          3.2.9
-Release:          2%{?dist}
+Version:          4.0.0
+Release:          1%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
 License:          BSD
 URL:              http://redis.io
 %if 0%{?prever:1}
-Source0:          https://github.com/%{gh_owner}/%{gh_project}/archive/%{gh_commit}/%{name}-%{version}-%{gh_short}.tar.gz
+Source0:          https://github.com/%{gh_owner}/%{gh_project}/archive/%{gh_commit}/%{name}-%{version}%{prever}-%{gh_short}.tar.gz
 %else
 Source0:          http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %endif
@@ -50,7 +50,7 @@ Source9:          %{name}-limit-init
 
 # Update configuration for Fedora
 Patch0:           0001-redis-3.2-redis-conf.patch
-Patch1:           0002-redis-3.2-deps-library-fPIC-performance-tuning.patch
+Patch1:           0002-redis-4.0-deps-library-fPIC-performance-tuning.patch
 Patch2:           0003-redis-3.2.5-use-system-jemalloc.patch
 
 # https://github.com/antirez/redis/pull/3491 - man pages
@@ -147,6 +147,10 @@ make %{?_smp_mflags} V=1 \
 
 %check
 %if %{with_tests}
+# ERR Active defragmentation cannot be enabled: it requires a Redis server compiled
+# with a modified Jemalloc like the one shipped by default with the Redis source distribution
+sed -e '/memefficiency/d' -i tests/test_helper.tcl
+
 make test
 make test-sentinel
 %else
@@ -260,34 +264,27 @@ fi
 %{_initrddir}/%{name}
 %{_initrddir}/%{name}-sentinel
 %config(noreplace) %{_sysconfdir}/security/limits.d/95-%{name}.conf
-%dir %attr(0750, redis, redis) %{_localstatedir}/run/%{name}
+%dir %attr(0755, redis, redis) %{_localstatedir}/run/%{name}
 %endif
 
 
 %changelog
-* Sat Jun 24 2017 Remi Collet <remi@remirepo.net> - 3.2.9-2
-- rebuild with latest fedora changes
+* Mon Jul 17 2017 Remi Collet <remi@remirepo.net> - 4.0.0-1
+- update to 4.0.0 GA
+
+* Sat Jun 24 2017 Remi Collet <remi@remirepo.net> - 4.0.0-0.4.RC3
+- rebuild with some fedora changes:
  - Add RuntimeDirectory=redis to systemd unit file (RHBZ #1454700)
  - Fix a shutdown failure with Unix domain sockets (RHBZ #1444988)
 
-* Sun May 21 2017 Remi Collet <remi@remirepo.net> - 3.2.9-1
-- Redis 3.2.9 - Released Mon May 17 17:35:38 CEST 2017
-- Upgrade urgency LOW: A few rarely harmful bugs were fixed.
+* Mon Apr 24 2017 Remi Collet <remi@fedoraproject.org> - 4.0.0-0.3.RC3
+- update to 4.0.0-RC3 (3.9.103)
 
-* Mon Feb 13 2017 Remi Collet <remi@fedoraproject.org> - 3.2.8-1
-- Redis 3.2.8 - Released Sun Feb 12 16:11:18 CET 2017
-- Upgrade urgency CRITICAL: This release reverts back the Jemalloc upgrade
-  that is believed to potentially cause a server deadlock. A MIGRATE crash
-  is also fixed.
+* Tue Dec  6 2016 Remi Collet <remi@fedoraproject.org> - 4.0.0-0.2.RC2
+- update to 4.0.0-RC2 (3.9.102)
 
-* Wed Feb  1 2017 Remi Collet <remi@fedoraproject.org> - 3.2.7-1
-- Redis 3.2.7 - Released Tue Jan 31 16:21:41 CET 2017
-- Upgrade urgency HIGH: This release fixes important security and
-  correctness issues.
-
-* Tue Dec  6 2016 Remi Collet <remi@fedoraproject.org> - 3.2.6-1
-- Redis 3.2.6 - Released Tue Dec 06 09:33:29 CET 2016
-- Upgrade urgency MODERATE: minor fixes.
+* Mon Dec  5 2016 Remi Collet <remi@fedoraproject.org> - 4.0.0-0.1.RC1
+- update to 4.0.0-RC1 (3.9.101)
 
 * Thu Oct 27 2016 Remi Collet <remi@fedoraproject.org> - 3.2.5-1
 - Redis 3.2.5 - Released Wed Oct 26 09:16:40 CEST 2016
