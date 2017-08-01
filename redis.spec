@@ -27,7 +27,7 @@
 %global gh_project   redis
 
 Name:             redis
-Version:          4.0.0
+Version:          4.0.1
 Release:          1%{?dist}
 Summary:          A persistent key-value database
 
@@ -269,6 +269,10 @@ fi
 
 
 %changelog
+* Tue Aug  1 2017 Remi Collet <remi@remirepo.net> - 4.0.1-1
+- Redis 4.0.1 - Released Mon Jul 24 15:51:31 CEST 2017
+- Upgrade urgency MODERATE: A few serious but non critical bugs
+
 * Mon Jul 17 2017 Remi Collet <remi@remirepo.net> - 4.0.0-1
 - update to 4.0.0 GA
 
