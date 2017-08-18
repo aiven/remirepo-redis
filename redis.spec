@@ -9,6 +9,12 @@
 #
 %global _hardened_build 1
 
+%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
+%global with_redistrib 1
+%else
+%global with_redistrib 0
+%endif
+
 # systemd >= 204 with additional service config
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 %global with_systemd 1
@@ -28,7 +34,7 @@
 
 Name:             redis
 Version:          4.0.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -104,6 +110,19 @@ a cache.
 You can use Redis from most programming languages also.
 
 Documentation: http://redis.io/documentation
+
+
+%if 0%{?with_redistrib}
+%package           trib
+Summary:           Cluster management script for Redis
+BuildArch:         noarch
+Requires:          ruby
+Requires:          rubygem-redis
+
+%description       trib
+Redis cluster management utility providing cluster creation, node addition
+and removal, status checks, resharding, rebalancing, and other operations.
+%endif
 
 
 %prep
@@ -186,6 +205,11 @@ chmod 755 %{buildroot}%{_bindir}/%{name}-*
 # Install redis-shutdown
 install -pDm755 %{SOURCE7} %{buildroot}%{_libexecdir}/%{name}-shutdown
 
+%if 0%{?with_redistrib}
+# Install redis-trib
+install -pDm755 src/%{name}-trib.rb %{buildroot}%{_bindir}/%{name}-trib
+%endif
+
 # Install man pages
 man=$(dirname %{buildroot}%{_mandir})
 for page in man/man?/*; do
@@ -249,6 +273,9 @@ fi
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}-sentinel.conf
 %dir %attr(0750, redis, redis) %{_localstatedir}/lib/%{name}
 %dir %attr(0750, redis, redis) %{_localstatedir}/log/%{name}
+%if 0%{?with_redistrib}
+%exclude %{_bindir}/%{name}-trib
+%endif
 %{_bindir}/%{name}-*
 %{_libexecdir}/%{name}-*
 %{_mandir}/man1/redis*
@@ -268,7 +295,17 @@ fi
 %endif
 
 
+%if 0%{?with_redistrib}
+%files trib
+%license COPYING
+%{_bindir}/%{name}-trib
+%endif
+
+
 %changelog
+* Fri Aug 18 2017 Remi Collet <remi@remirepo.net> - 4.0.1-2
+- Add redis-trib based on patch from Sebastian Saletnik.  (RHBZ #1215654)
+
 * Tue Aug  1 2017 Remi Collet <remi@remirepo.net> - 4.0.1-1
 - Redis 4.0.1 - Released Mon Jul 24 15:51:31 CEST 2017
 - Upgrade urgency MODERATE: A few serious but non critical bugs
