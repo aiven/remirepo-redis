@@ -34,7 +34,7 @@
 
 Name:             redis
 Version:          4.0.1
-Release:          2%{?dist}
+Release:          3%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -303,6 +303,9 @@ fi
 
 
 %changelog
+* Tue Sep  5 2017 Remi Collet <remi@remirepo.net> - 4.0.1-3
+- switch systemd unit to Type=notify, see rhbz #1172841
+
 * Fri Aug 18 2017 Remi Collet <remi@remirepo.net> - 4.0.1-2
 - Add redis-trib based on patch from Sebastian Saletnik.  (RHBZ #1215654)
 
