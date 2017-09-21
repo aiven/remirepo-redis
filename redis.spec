@@ -33,8 +33,8 @@
 %global gh_project   redis
 
 Name:             redis
-Version:          4.0.1
-Release:          3%{?dist}
+Version:          4.0.2
+Release:          1%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -303,6 +303,10 @@ fi
 
 
 %changelog
+* Thu Sep 21 2017 Remi Collet <remi@remirepo.net> - 4.0.2-1
+- Redis 4.0.2 - Released Thu Sep 21 15:47:53 CEST 2017
+- Upgrade urgency HIGH: Several potentially critical bugs fixed.
+
 * Tue Sep  5 2017 Remi Collet <remi@remirepo.net> - 4.0.1-3
 - switch systemd unit to Type=notify, see rhbz #1172841
 
