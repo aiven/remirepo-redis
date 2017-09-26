@@ -23,7 +23,7 @@
 %endif
 
 # Tests fail in mock, not in local build.
-%global with_tests   %{?_with_tests:1}%{!?_with_tests:0}
+%global with_tests   0%{?_with_tests:1}
 
 # Pre-version are only available in github
 #global prever       RC3
@@ -132,72 +132,50 @@ and removal, status checks, resharding, rebalancing, and other operations.
 %else
 %setup -q -n %{name}-%{version}
 %endif
+rm -frv deps/jemalloc
 
 %patch0 -p1 -b .rpmconf
-
 %patch3 -p1
 %patch4 -p1 -b .old
 
-# No hidden build.
-sed -i -e 's|\t@|\t|g' deps/lua/src/Makefile
-sed -i -e 's|$(QUIET_CC)||g' src/Makefile
-sed -i -e 's|$(QUIET_LINK)||g' src/Makefile
-sed -i -e 's|$(QUIET_INSTALL)||g' src/Makefile
 # Use system jemalloc library
 sed -i -e '/cd jemalloc && /d' deps/Makefile
 sed -i -e 's|../deps/jemalloc/lib/libjemalloc.a|-ljemalloc -ldl|g' src/Makefile
 sed -i -e 's|-I../deps/jemalloc.*|-DJEMALLOC_NO_DEMANGLE -I/usr/include/jemalloc|g' src/Makefile
-# Ensure deps are built with proper flags
-sed -i -e 's|$(CFLAGS)|%{optflags} -fPIC|g' deps/Makefile
-sed -i -e 's|OPTIMIZATION?=-O3|OPTIMIZATION=%{optflags}|g' deps/hiredis/Makefile
-sed -i -e 's|$(LDFLAGS)|%{?__global_ldflags}|g' deps/hiredis/Makefile
-sed -i -e 's|$(CFLAGS)|%{optflags} -fPIC|g' deps/linenoise/Makefile
-sed -i -e 's|$(LDFLAGS)|%{?__global_ldflags}|g' deps/linenoise/Makefile
+
+
+%global malloc_flags MALLOC=jemalloc
+%global make_flags   DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} LUA_CFLAGS="%{optflags} -fPIC" LUA_LDFLAGS+="%{?__global_ldflags}" INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
 
 
 %build
-rm -rvf deps/jemalloc
+make %{?_smp_mflags} %{make_flags} all
 
-export CFLAGS="$RPM_OPT_FLAGS"
-make %{?_smp_mflags} V=1 \
-  DEBUG="" \
-  LDFLAGS="%{?__global_ldflags}" \
-  CFLAGS="$RPM_OPT_FLAGS -fPIC" \
-  LUA_CFLAGS="-fPIC" \
-  MALLOC=jemalloc \
-  all
-
-%check
-%if %{with_tests}
-# ERR Active defragmentation cannot be enabled: it requires a Redis server compiled
-# with a modified Jemalloc like the one shipped by default with the Redis source distribution
-sed -e '/memefficiency/d' -i tests/test_helper.tcl
-
-# https://github.com/antirez/redis/issues/1417 (for "taskset -c 1")
-taskset -c 1 make test ||:
-make test-sentinel
-%else
-: Test disabled, missing '--with tests' option.
-%endif
 
 %install
-make install PREFIX=%{buildroot}%{_prefix}
-# Install misc other
-install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
-install -p -D -m 640 %{name}.conf  %{buildroot}%{_sysconfdir}/%{name}.conf
-install -p -D -m 640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}-sentinel.conf
+make %{make_flags} install
+
+# Filesystem.
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/%{name}
 install -d -m 750 %{buildroot}%{_localstatedir}/log/%{name}
+install -d -m 750 %{buildroot}%{_localstatedir}/run/%{name}
 
-%if %{with_systemd}
+# Install logrotate file.
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+# Install configuration files.
+install -p -D -m 640 %{name}.conf  %{buildroot}%{_sysconfdir}/%{name}.conf
+install -p -D -m 640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}-sentinel.conf
+
 # Install systemd unit files.
+%if %{with_systemd}
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-sentinel.service
-# this folder requires systemd >= 204
+
+# Install systemd limit files (requires systemd >= 204)
 install -p -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/systemd/system/%{name}.service.d/limit.conf
 install -p -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/systemd/system/%{name}-sentinel.service.d/limit.conf
-%else
-install -d -m 750 %{buildroot}%{_localstatedir}/run/%{name}
+%else # install SysV service files
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/%{name}-sentinel
 install -p -D -m 644 %{SOURCE9} %{buildroot}%{_sysconfdir}/security/limits.d/95-%{name}.conf
@@ -221,6 +199,20 @@ for page in man/man?/*; do
 done
 ln -s redis-server.1 %{buildroot}%{_mandir}/man1/redis-sentinel.1
 ln -s redis.conf.5   %{buildroot}%{_mandir}/man5/redis-sentinel.conf.5
+
+
+%check
+%if %{with_tests}
+# ERR Active defragmentation cannot be enabled: it requires a Redis server compiled
+# with a modified Jemalloc like the one shipped by default with the Redis source distribution
+sed -e '/memefficiency/d' -i tests/test_helper.tcl
+
+# https://github.com/antirez/redis/issues/1417 (for "taskset -c 1")
+taskset -c 1 make test ||:
+make test-sentinel
+%else
+: Test disabled, missing '--with tests' option.
+%endif
 
 
 %post
