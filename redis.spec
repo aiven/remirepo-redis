@@ -34,7 +34,7 @@
 
 Name:             redis
 Version:          4.0.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -56,8 +56,6 @@ Source9:          %{name}-limit-init
 
 # Update configuration for Fedora
 Patch0:           0001-redis-3.2-redis-conf.patch
-Patch1:           0002-redis-4.0-deps-library-fPIC-performance-tuning.patch
-Patch2:           0003-redis-3.2.5-use-system-jemalloc.patch
 
 # https://github.com/antirez/redis/pull/3491 - man pages
 Patch3:           %{name}-pr3491.patch
@@ -82,6 +80,9 @@ Requires(preun):  chkconfig
 Requires(preun):  initscripts
 Requires(postun): initscripts
 %endif
+Provides:          bundled(hiredis)
+Provides:          bundled(lua-libs)
+Provides:          bundled(linenoise)
 
 
 %description
@@ -133,8 +134,6 @@ and removal, status checks, resharding, rebalancing, and other operations.
 %endif
 
 %patch0 -p1 -b .rpmconf
-%patch1 -p1 -b .pic
-%patch2 -p0 -b .jem
 
 %patch3 -p1
 %patch4 -p1 -b .old
@@ -144,11 +143,15 @@ sed -i -e 's|\t@|\t|g' deps/lua/src/Makefile
 sed -i -e 's|$(QUIET_CC)||g' src/Makefile
 sed -i -e 's|$(QUIET_LINK)||g' src/Makefile
 sed -i -e 's|$(QUIET_INSTALL)||g' src/Makefile
+# Use system jemalloc library
+sed -i -e '/cd jemalloc && /d' deps/Makefile
+sed -i -e 's|../deps/jemalloc/lib/libjemalloc.a|-ljemalloc -ldl|g' src/Makefile
+sed -i -e 's|-I../deps/jemalloc.*|-DJEMALLOC_NO_DEMANGLE -I/usr/include/jemalloc|g' src/Makefile
 # Ensure deps are built with proper flags
-sed -i -e 's|$(CFLAGS)|%{optflags}|g' deps/Makefile
+sed -i -e 's|$(CFLAGS)|%{optflags} -fPIC|g' deps/Makefile
 sed -i -e 's|OPTIMIZATION?=-O3|OPTIMIZATION=%{optflags}|g' deps/hiredis/Makefile
 sed -i -e 's|$(LDFLAGS)|%{?__global_ldflags}|g' deps/hiredis/Makefile
-sed -i -e 's|$(CFLAGS)|%{optflags}|g' deps/linenoise/Makefile
+sed -i -e 's|$(CFLAGS)|%{optflags} -fPIC|g' deps/linenoise/Makefile
 sed -i -e 's|$(LDFLAGS)|%{?__global_ldflags}|g' deps/linenoise/Makefile
 
 
@@ -170,7 +173,8 @@ make %{?_smp_mflags} V=1 \
 # with a modified Jemalloc like the one shipped by default with the Redis source distribution
 sed -e '/memefficiency/d' -i tests/test_helper.tcl
 
-make test
+# https://github.com/antirez/redis/issues/1417 (for "taskset -c 1")
+taskset -c 1 make test ||:
 make test-sentinel
 %else
 : Test disabled, missing '--with tests' option.
@@ -186,7 +190,7 @@ install -d -m 750 %{buildroot}%{_localstatedir}/lib/%{name}
 install -d -m 750 %{buildroot}%{_localstatedir}/log/%{name}
 
 %if %{with_systemd}
-# Install systemd unit
+# Install systemd unit files.
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-sentinel.service
 # this folder requires systemd >= 204
@@ -303,6 +307,9 @@ fi
 
 
 %changelog
+* Tue Sep 26 2017 Remi Collet <remi@remirepo.net> - 4.0.2-2
+- simplify build, synced from Fedora
+
 * Thu Sep 21 2017 Remi Collet <remi@remirepo.net> - 4.0.2-1
 - Redis 4.0.2 - Released Thu Sep 21 15:47:53 CEST 2017
 - Upgrade urgency HIGH: Several potentially critical bugs fixed.
