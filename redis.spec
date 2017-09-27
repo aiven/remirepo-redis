@@ -145,7 +145,7 @@ sed -i -e 's|-I../deps/jemalloc.*|-DJEMALLOC_NO_DEMANGLE -I/usr/include/jemalloc
 
 
 %global malloc_flags MALLOC=jemalloc
-%global make_flags   DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} LUA_CFLAGS="%{optflags} -fPIC" LUA_LDFLAGS+="%{?__global_ldflags}" INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
+%global make_flags DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
 
 
 %build
