@@ -43,6 +43,7 @@
 %global doc_commit 69a5512ae6a4ec77d7b1d0af6aac2224e8e83f95
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
+# %%{rpmmacrodir} not usable on EL-6
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
@@ -369,7 +370,7 @@ fi
 %config(noreplace) %{_sysconfdir}/systemd/system/%{name}.service.d/limit.conf
 %dir %{_sysconfdir}/systemd/system/%{name}-sentinel.service.d
 %config(noreplace) %{_sysconfdir}/systemd/system/%{name}-sentinel.service.d/limit.conf
-%dir %attr(0750, redis, redis) %ghost %{_localstatedir}/run/%{name}
+%dir %attr(0755, redis, redis) %ghost %{_localstatedir}/run/%{name}
 %else
 %{_initrddir}/%{name}
 %{_initrddir}/%{name}-sentinel
@@ -384,7 +385,7 @@ fi
 
 %files doc
 %docdir %{_docdir}/%{name}
-%{_docdir}/%{name}/*
+%{_docdir}/%{name}
 
 %if 0%{?with_redistrib}
 %files trib
