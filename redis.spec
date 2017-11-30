@@ -47,8 +47,8 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.2
-Release:           3%{?dist}
+Version:           4.0.3
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -274,8 +274,11 @@ done
 ln -s redis-server.1 %{buildroot}%{_mandir}/man1/redis-sentinel.1
 ln -s redis.conf.5   %{buildroot}%{_mandir}/man5/redis-sentinel.conf.5
 
-# Install markdown and html pages
+# Install documentation and html pages
 doc=$(echo %{buildroot}/%{_docdir}/%{name})
+for page in 00-RELEASENOTES BUGS CONTRIBUTING MANIFESTO; do
+    install -Dpm644 $page $doc/$page
+done
 for page in $(find doc -name \*.md | sed -e 's|.md$||g'); do
     base=$(echo $page | sed -e 's|doc/||g')
     install -Dpm644 $page.md $doc/$base.md
@@ -345,7 +348,6 @@ fi
 %files
 %{!?_licensedir:%global license %%doc}
 %license COPYING
-%doc 00-RELEASENOTES BUGS CONTRIBUTING MANIFESTO
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}.conf
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}-sentinel.conf
@@ -395,6 +397,12 @@ fi
 
 
 %changelog
+* Thu Nov 30 2017 Remi Collet <remi@remirepo.net> - 4.0.3-1
+- Redis 4.0.3 - Released Thu Nov 30 13:14:50 CET 2017
+- Upgrade urgency CRITICAL: Several PSYNC2 bugs can corrupt the
+  slave data set after a restart and a successful PSYNC2 handshake.
+- drop duplicated documentation from main package
+
 * Tue Nov 21 2017 Remi Collet <remi@remirepo.net> - 4.0.2-3
 - add doc and devel subpackages, synced from Fedora
 - keep man pages in main package
