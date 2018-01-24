@@ -40,14 +40,14 @@
 
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
-%global doc_commit dc402c61da3c015e49eb6fd00e4a0564d122d645
+%global doc_commit fb49038ec21f8df96f64f7605659fc026de048a2
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.6
+Version:           4.0.7
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
@@ -397,6 +397,11 @@ fi
 
 
 %changelog
+* Wed Jan 24 2018 Remi Collet <remi@remirepo.net> - 4.0.7-1
+- Redis 4.0.7 - Released Wed Jan 24 11:01:40 CET 2018
+- Upgrade urgency MODERATE: Several bugs fixed, but none of critical level.
+- Update to current upstream redis-doc
+
 * Tue Dec  5 2017 Remi Collet <remi@remirepo.net> - 4.0.6-1
 - Redis 4.0.6 - Released Thu Dec 4 17:54:10 CET 2017
 - Upgrade urgency CRITICAL: More errors in the fixes for PSYNC2
