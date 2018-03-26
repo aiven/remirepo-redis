@@ -41,14 +41,14 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 38c2bd6f5331aad382494b3c7833b0cc2b92222a
+%global doc_commit 7d4bbde457a96eaf4c50b76ceadb37da98aff584
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.8
+Version:           4.0.9
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
@@ -398,6 +398,11 @@ fi
 
 
 %changelog
+* Mon Mar 26 2018 Remi Collet <remi@remirepo.net> - 4.0.9-1
+- Update to 4.0.9 - Released Mon Mar 26 17:52:32 CEST 2018
+- Upgrade urgency CRITICAL: Critical upgrade for users
+  using AOF with the fsync policy set to "always".
+
 * Sun Feb  4 2018 Remi Collet <remi@remirepo.net> - 4.0.8-1
 - Update to 4.0.8 - Released Fri Feb 2 11:17:40 CET 2018
 - Upgrade urgency CRITICAL ONLY for Redis Cluster users.
