@@ -81,6 +81,9 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
+# https://github.com/antirez/redis/pull/4964 - uint64
+Patch0003:         0003-include-stdint.h-for-unit64_t-definition.patch
+
 %if 0%{?with_perftools}
 BuildRequires:     gperftools-devel
 %else
@@ -186,6 +189,7 @@ mv ../%{name}-doc-%{doc_commit} doc
 rm -frv deps/jemalloc
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 # Use system jemalloc library
 sed -i -e '/cd jemalloc && /d' deps/Makefile
@@ -400,6 +404,7 @@ fi
 %changelog
 * Wed May 30 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC1-1
 - update to 5.0.0-RC1 (4.9.101)
+- open https://github.com/antirez/redis/pull/4964 - stdint.h
 
 * Mon Mar 26 2018 Remi Collet <remi@remirepo.net> - 4.0.9-1
 - Update to 4.0.9 - Released Mon Mar 26 17:52:32 CEST 2018
