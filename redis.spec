@@ -32,8 +32,9 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-#global prever       RC3
-%global gh_commit    51b12ed1b5dccd6234e0dc1d3f76996420bcf5a9
+%global upstream_ver 5.0.0
+%global upstream_pre RC1
+%global gh_commit    2ee4a1c9806aab459d05e60751e07d86a4bebd78
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -41,21 +42,21 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 7d4bbde457a96eaf4c50b76ceadb37da98aff584
+%global doc_commit 8be19118fbf79be8eceac818b98c27871c9af8f3
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.9
+Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
 URL:               http://redis.io
-%if 0%{?prever:1}
-Source0:           https://github.com/%{gh_owner}/%{gh_project}/archive/%{gh_commit}/%{name}-%{version}%{prever}-%{gh_short}.tar.gz
+%if 0%{?upstream_pre:1}
+Source0:           https://github.com/%{gh_owner}/%{gh_project}/archive/%{gh_commit}/%{name}-%{upstream_ver}%{upstream_pre}-%{gh_short}.tar.gz
 %else
 Source0:           http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %endif
@@ -176,11 +177,10 @@ and removal, status checks, resharding, rebalancing, and other operations.
 %endif
 
 %prep
-%setup -q -b 10
-%if 0%{?prever:1}
-%setup -q -n %{gh_project}-%{gh_commit}
+%if 0%{?upstream_pre:1}
+%setup -q -n %{gh_project}-%{gh_commit} -b 10
 %else
-%setup -q
+%setup -q -b 10
 %endif
 mv ../%{name}-doc-%{doc_commit} doc
 rm -frv deps/jemalloc
@@ -398,6 +398,9 @@ fi
 
 
 %changelog
+* Wed May 30 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC1-1
+- update to 5.0.0-RC1 (4.9.101)
+
 * Mon Mar 26 2018 Remi Collet <remi@remirepo.net> - 4.0.9-1
 - Update to 4.0.9 - Released Mon Mar 26 17:52:32 CEST 2018
 - Upgrade urgency CRITICAL: Critical upgrade for users
