@@ -33,7 +33,7 @@
 
 # Pre-version are only available in github
 #global prever       RC3
-%global gh_commit    51b12ed1b5dccd6234e0dc1d3f76996420bcf5a9
+%global gh_commit    556b2d2bee22d1307e696090c9be10fc10a47cd3
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -48,7 +48,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.9
+Version:           4.0.10
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
@@ -398,6 +398,9 @@ fi
 
 
 %changelog
+* Wed Jun 13 2018 Mika Eloranta <mel@aiven.io> - 4.0.10-1
+- Update to 4.0.10
+
 * Mon Mar 26 2018 Remi Collet <remi@remirepo.net> - 4.0.9-1
 - Update to 4.0.9 - Released Mon Mar 26 17:52:32 CEST 2018
 - Upgrade urgency CRITICAL: Critical upgrade for users
