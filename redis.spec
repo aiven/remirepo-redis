@@ -33,8 +33,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 5.0.0
-%global upstream_pre RC2
-%global gh_commit    f7209749a632218e5a3fa3171f5711075573af8f
+%global upstream_pre RC3
+%global gh_commit    48dfd42d729ce8325b20cb084203b129b2759fb8
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -70,10 +70,6 @@ Source7:           %{name}-limit-systemd
 Source8:           %{name}-limit-init
 Source9:           macros.%{name}
 Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/%{name}-doc-%{short_doc_commit}.tar.gz
-
-# See https://github.com/antirez/redis/issues/5022
-Source11:          https://raw.githubusercontent.com/antirez/redis/unstable/src/rax.c
-Source12:          https://raw.githubusercontent.com/antirez/redis/unstable/src/rax.h
 
 # To refresh patches:
 # tar xf redis-xxx.tar.gz && cd redis-xxx && git init && git add . && git commit -m "%%{version} baseline"
@@ -191,8 +187,6 @@ mv ../%{name}-doc-%{doc_commit} doc
 rm -frv deps/jemalloc
 %patch0001 -p1
 %patch0002 -p1
-
-cp %{SOURCE11} %{SOURCE12} src/
 
 # Use system jemalloc library
 sed -i -e '/cd jemalloc && /d' deps/Makefile
@@ -410,6 +404,9 @@ fi
 
 
 %changelog
+* Thu Jun 14 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC3-1
+- Redis 5.0 RC3 (4.9.103) - Released Wed Jun 14 9:51:44 CEST 2018
+
 * Thu Jun 14 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC2-1
 - Redis 5.0 RC2 (4.9.102) - Released Wed Jun 13 12:49:13 CEST 2018
 - Upgrade urgency CRITICAL: This release fixes important security issues.
