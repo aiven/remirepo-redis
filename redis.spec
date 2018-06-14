@@ -33,8 +33,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 5.0.0
-%global upstream_pre RC1
-%global gh_commit    2ee4a1c9806aab459d05e60751e07d86a4bebd78
+%global upstream_pre RC2
+%global gh_commit    f7209749a632218e5a3fa3171f5711075573af8f
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -42,7 +42,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 8be19118fbf79be8eceac818b98c27871c9af8f3
+%global doc_commit b9d39b104e0beff9e70b3d738c17d48491d6646a
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
@@ -71,6 +71,10 @@ Source8:           %{name}-limit-init
 Source9:           macros.%{name}
 Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/%{name}-doc-%{short_doc_commit}.tar.gz
 
+# See https://github.com/antirez/redis/issues/5022
+Source11:          https://raw.githubusercontent.com/antirez/redis/unstable/src/rax.c
+Source12:          https://raw.githubusercontent.com/antirez/redis/unstable/src/rax.h
+
 # To refresh patches:
 # tar xf redis-xxx.tar.gz && cd redis-xxx && git init && git add . && git commit -m "%%{version} baseline"
 # git am %%{patches}
@@ -81,8 +85,6 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
-# https://github.com/antirez/redis/pull/4964 - uint64
-Patch0003:         0003-include-stdint.h-for-unit64_t-definition.patch
 
 %if 0%{?with_perftools}
 BuildRequires:     gperftools-devel
@@ -189,7 +191,8 @@ mv ../%{name}-doc-%{doc_commit} doc
 rm -frv deps/jemalloc
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
+
+cp %{SOURCE11} %{SOURCE12} src/
 
 # Use system jemalloc library
 sed -i -e '/cd jemalloc && /d' deps/Makefile
@@ -208,6 +211,11 @@ if test "$api" != "%{redis_modules_abi}"; then
    : Update the redis_modules_abi macro, the rpmmacros file, and rebuild.
    exit 1
 fi
+
+# Fix for old GCC
+%if 0%{?rhel} == 6
+sed -e '/GCC diagnostic/d' -i src/lzf_d.c
+%endif
 
 %if 0%{?with_pandoc}
 docs=`find doc -name \*.md | sed -e 's|.md$||g'`
@@ -402,6 +410,14 @@ fi
 
 
 %changelog
+* Thu Jun 14 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC2-1
+- Redis 5.0 RC2 (4.9.102) - Released Wed Jun 13 12:49:13 CEST 2018
+- Upgrade urgency CRITICAL: This release fixes important security issues.
+                      HIGH: This release fixes a SCAN commands family bug.
+                  MODERATE: This release fixes a PSYNC2 edge case with expires.
+                  MODERATE: Sentinel related fixes.
+                       LOW: All the other issues
+
 * Wed May 30 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC1-1
 - update to 5.0.0-RC1 (4.9.101)
 - open https://github.com/antirez/redis/pull/4964 - stdint.h
