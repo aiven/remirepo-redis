@@ -41,14 +41,14 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 7d4bbde457a96eaf4c50b76ceadb37da98aff584
+%global doc_commit b9d39b104e0beff9e70b3d738c17d48491d6646a
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.9
+Version:           4.0.10
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
@@ -398,6 +398,14 @@ fi
 
 
 %changelog
+* Thu Jun 14 2018 Remi Collet <remi@remirepo.net> - 4.0.10-1
+- Update to 4.0.10 - Released Wed Jun 13 12:49:13 CEST 2018
+- Upgrade urgency CRITICAL: This release fixes important security issues.
+                      HIGH: This release fixes a SCAN commands family bug.
+                  MODERATE: This release fixes a PSYNC2 edge case with expires.
+                  MODERATE: Sentinel related fixes.
+                       LOW: All the other issues
+
 * Mon Mar 26 2018 Remi Collet <remi@remirepo.net> - 4.0.9-1
 - Update to 4.0.9 - Released Mon Mar 26 17:52:32 CEST 2018
 - Upgrade urgency CRITICAL: Critical upgrade for users
