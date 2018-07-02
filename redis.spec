@@ -49,7 +49,7 @@
 
 Name:              redis
 Version:           4.0.10
-Release:           1%{?dist}
+Release:           1.aiven.2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
