@@ -109,6 +109,9 @@ Requires(preun):   chkconfig
 Requires(preun):   initscripts
 Requires(postun):  initscripts
 %endif
+# Force explicit jemalloc installation or otherwise "389-ds-base-libs" might get installed
+# instead via libjemalloc.so dependency and the .so resides in the wrong dir in that package
+Requires:          jemalloc
 Provides:          bundled(hiredis)
 Provides:          bundled(lua-libs)
 Provides:          bundled(linenoise)
