@@ -16,12 +16,6 @@
 %global with_redistrib 0
 %endif
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 6
-%global with_pandoc 1
-%else
-%global with_pandoc 0
-%endif
-
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 %global with_systemd 1
 %else
@@ -48,7 +42,7 @@
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
-Version:           4.0.10
+Version:           4.0.11
 Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
@@ -88,9 +82,6 @@ BuildRequires:     jemalloc-devel
 %if 0%{?with_tests}
 BuildRequires:     procps-ng
 BuildRequires:     tcl
-%endif
-%if 0%{?with_pandoc}
-BuildRequires:     pandoc
 %endif
 %if 0%{?with_systemd}
 BuildRequires:     systemd
@@ -205,13 +196,6 @@ if test "$api" != "%{redis_modules_abi}"; then
    exit 1
 fi
 
-%if 0%{?with_pandoc}
-docs=`find doc -name \*.md | sed -e 's|.md$||g'`
-for doc in $docs; do
-    pandoc --standalone --from markdown --to html --output $doc.html $doc.md
-done
-%endif
-
 %if 0%{?with_perftools}
 %global malloc_flags	MALLOC=tcmalloc
 %else
@@ -283,9 +267,6 @@ done
 for page in $(find doc -name \*.md | sed -e 's|.md$||g'); do
     base=$(echo $page | sed -e 's|doc/||g')
     install -Dpm644 $page.md $doc/$base.md
-%if 0%{?with_pandoc}
-    install -Dpm644 $page.html $doc/$base.html
-%endif
 done
 
 # Install rpm macros for redis modules
@@ -398,6 +379,10 @@ fi
 
 
 %changelog
+* Thu Aug 09 2018 Nathan Scott <nathans@redhat.com> - 4.0.11-1
+- Drop the pandoc build dependency, install only markdown.
+- Upstream 4.0.11 release.
+
 * Thu Jun 14 2018 Remi Collet <remi@remirepo.net> - 4.0.10-1
 - Update to 4.0.10 - Released Wed Jun 13 12:49:13 CEST 2018
 - Upgrade urgency CRITICAL: This release fixes important security issues.
