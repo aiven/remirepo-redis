@@ -16,12 +16,6 @@
 %global with_redistrib 0
 %endif
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 6
-%global with_pandoc 1
-%else
-%global with_pandoc 0
-%endif
-
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 %global with_systemd 1
 %else
@@ -33,8 +27,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 5.0.0
-%global upstream_pre RC3
-%global gh_commit    48dfd42d729ce8325b20cb084203b129b2759fb8
+%global upstream_pre RC4
+%global gh_commit    5b06bdf45745477718c7f2b8fa85cd999b39be63
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -90,9 +84,6 @@ BuildRequires:     jemalloc-devel
 %if 0%{?with_tests}
 BuildRequires:     procps-ng
 BuildRequires:     tcl
-%endif
-%if 0%{?with_pandoc}
-BuildRequires:     pandoc
 %endif
 %if 0%{?with_systemd}
 BuildRequires:     systemd
@@ -211,13 +202,6 @@ fi
 sed -e '/GCC diagnostic/d' -i src/lzf_d.c
 %endif
 
-%if 0%{?with_pandoc}
-docs=`find doc -name \*.md | sed -e 's|.md$||g'`
-for doc in $docs; do
-    pandoc --standalone --from markdown --to html --output $doc.html $doc.md
-done
-%endif
-
 %if 0%{?with_perftools}
 %global malloc_flags	MALLOC=tcmalloc
 %else
@@ -289,9 +273,6 @@ done
 for page in $(find doc -name \*.md | sed -e 's|.md$||g'); do
     base=$(echo $page | sed -e 's|doc/||g')
     install -Dpm644 $page.md $doc/$base.md
-%if 0%{?with_pandoc}
-    install -Dpm644 $page.html $doc/$base.html
-%endif
 done
 
 # Install rpm macros for redis modules
@@ -404,6 +385,10 @@ fi
 
 
 %changelog
+* Thu Aug  9 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC4-1
+- Redis 5.0 RC4 (4.9.104) - Released Fri Aug 03 13:51:02 CEST 2018
+- Drop the pandoc build dependency, install only markdown.
+
 * Thu Jun 14 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC3-1
 - Redis 5.0 RC3 (4.9.103) - Released Wed Jun 14 9:51:44 CEST 2018
 
