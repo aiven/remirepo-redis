@@ -8,7 +8,12 @@
 # Please preserve changelog entries
 #
 %global _hardened_build 1
-%global with_perftools 0
+
+%if 0%{?fedora} >= 29
+%global with_jemalloc 1
+%else
+%global with_jemalloc 0
+%endif
 
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 %global with_redistrib 1
@@ -44,7 +49,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -76,10 +81,11 @@ Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.pat
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
 
-%if 0%{?with_perftools}
-BuildRequires:     gperftools-devel
-%else
+BuildRequires:     gcc
+%if %{?with_jemalloc}
 BuildRequires:     jemalloc-devel
+%else
+Provides:          bundled(jemalloc) = 5.1.0
 %endif
 %if 0%{?with_tests}
 BuildRequires:     procps-ng
@@ -175,14 +181,16 @@ and removal, status checks, resharding, rebalancing, and other operations.
 %setup -q -b 10
 %endif
 mv ../%{name}-doc-%{doc_commit} doc
-rm -frv deps/jemalloc
 %patch0001 -p1
 %patch0002 -p1
 
+%if %{?with_jemalloc}
+rm -frv deps/jemalloc
 # Use system jemalloc library
 sed -i -e '/cd jemalloc && /d' deps/Makefile
 sed -i -e 's|../deps/jemalloc/lib/libjemalloc.a|-ljemalloc -ldl|g' src/Makefile
 sed -i -e 's|-I../deps/jemalloc.*|-DJEMALLOC_NO_DEMANGLE -I/usr/include/jemalloc|g' src/Makefile
+%endif
 
 # Configuration file changes and additions
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/redis.log|g' redis.conf
@@ -202,11 +210,7 @@ fi
 sed -e '/GCC diagnostic/d' -i src/lzf_d.c
 %endif
 
-%if 0%{?with_perftools}
-%global malloc_flags	MALLOC=tcmalloc
-%else
 %global malloc_flags	MALLOC=jemalloc
-%endif
 %global make_flags	DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
 
 %build
@@ -281,9 +285,11 @@ install -pDm644 %{S:9} %{buildroot}%{macrosdir}/macros.%{name}
 
 %check
 %if 0%{?with_tests}
+%if ! %{?with_jemalloc}
 # ERR Active defragmentation cannot be enabled: it requires a Redis server compiled
 # with a modified Jemalloc like the one shipped by default with the Redis source distribution
 sed -e '/memefficiency/d' -i tests/test_helper.tcl
+%endif
 
 # https://github.com/antirez/redis/issues/1417 (for "taskset -c 1")
 taskset -c 1 make %{make_flags} test
@@ -385,6 +391,9 @@ fi
 
 
 %changelog
+* Sun Sep  2 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC4-2
+- use bunled jemalloc instead of system shared version
+
 * Thu Aug  9 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC4-1
 - Redis 5.0 RC4 (4.9.104) - Released Fri Aug 03 13:51:02 CEST 2018
 - Drop the pandoc build dependency, install only markdown.
