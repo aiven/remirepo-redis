@@ -32,8 +32,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 5.0.0
-%global upstream_pre RC4
-%global gh_commit    5b06bdf45745477718c7f2b8fa85cd999b39be63
+%global upstream_pre RC5
+%global gh_commit    a72af0eac6d078e1062ae8a637f7d686092de102
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -49,7 +49,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -111,6 +111,7 @@ Requires(postun):  initscripts
 Provides:          bundled(hiredis)
 Provides:          bundled(lua-libs)
 Provides:          bundled(linenoise)
+Provides:          bundled(lzf)
 
 %global redis_modules_abi 1
 %global redis_modules_dir %{_libdir}/%{name}/modules
@@ -190,7 +191,11 @@ rm -frv deps/jemalloc
 sed -i -e '/cd jemalloc && /d' deps/Makefile
 sed -i -e 's|../deps/jemalloc/lib/libjemalloc.a|-ljemalloc -ldl|g' src/Makefile
 sed -i -e 's|-I../deps/jemalloc.*|-DJEMALLOC_NO_DEMANGLE -I/usr/include/jemalloc|g' src/Makefile
+%else
+mv deps/jemalloc/COPYING COPYING-jemalloc
 %endif
+mv deps/lua/COPYRIGHT    COPYRIGHT-lua
+mv deps/hiredis/COPYING  COPYING-hiredis
 
 # Configuration file changes and additions
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/redis.log|g' redis.conf
@@ -342,6 +347,11 @@ fi
 %files
 %{!?_licensedir:%global license %%doc}
 %license COPYING
+%license COPYRIGHT-lua
+%license COPYING-hiredis
+%if ! %{?with_jemalloc}
+%license COPYING-jemalloc
+%endif
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}.conf
 %attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}-sentinel.conf
@@ -391,6 +401,9 @@ fi
 
 
 %changelog
+* Thu Sep  6 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC5-1
+- Redis 5.0 RC5 (4.9.105) - Released Thu Sep 06 12:54:29 CEST 2018
+
 * Sun Sep  2 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC4-2
 - use bunled jemalloc instead of system shared version
 
