@@ -32,8 +32,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 5.0.0
-%global upstream_pre RC5
-%global gh_commit    a72af0eac6d078e1062ae8a637f7d686092de102
+%global upstream_pre RC6
+%global gh_commit    bedc3dee24eac518e91336109d801b0557582656
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -401,6 +401,9 @@ fi
 
 
 %changelog
+* Wed Oct 10 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC6-1
+- Redis 5.0 RC6 (4.9.106) - Released Wed Oct 10 11:03:54 CEST 2018
+
 * Thu Sep  6 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC5-1
 - Redis 5.0 RC5 (4.9.105) - Released Thu Sep 06 12:54:29 CEST 2018
 
