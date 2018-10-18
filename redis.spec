@@ -32,7 +32,7 @@
 
 # Pre-version are only available in github
 %global upstream_ver 5.0.0
-%global upstream_pre RC6
+#global upstream_pre RC6
 %global gh_commit    bedc3dee24eac518e91336109d801b0557582656
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
@@ -41,7 +41,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit b9d39b104e0beff9e70b3d738c17d48491d6646a
+%global doc_commit 65e68652b6cae915ea952f63edf8973cccc32567
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
@@ -401,6 +401,11 @@ fi
 
 
 %changelog
+* Wed Oct 17 2018 Remi Collet <remi@remirepo.net> - 5.0.0-1
+- Redis 5.0.0 - Released Wed Oct 17 13:28:26 CEST 2018
+- Upgrade urgency CRITICAL: Several fixes to streams AOF and replication.
+- Update to current upstream redis-doc
+
 * Wed Oct 10 2018 Remi Collet <remi@remirepo.net> - 5.0.0~RC6-1
 - Redis 5.0 RC6 (4.9.106) - Released Wed Oct 10 11:03:54 CEST 2018
 
