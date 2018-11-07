@@ -31,9 +31,9 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.0
+%global upstream_ver 5.0.1
 #global upstream_pre RC6
-%global gh_commit    bedc3dee24eac518e91336109d801b0557582656
+%global gh_commit    5f967165efae3fed5b52b9531a01b757cfcfab92
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -401,6 +401,10 @@ fi
 
 
 %changelog
+* Wed Nov  7 2018 Remi Collet <remi@remirepo.net> - 5.0.1-1
+- Redis 5.0.1 - Released Wed Nov 07 13:09:30 CET 2018
+- Upgrade urgency: URGENT if you use Redis Streams. MODERATE otherwise.
+
 * Wed Oct 17 2018 Remi Collet <remi@remirepo.net> - 5.0.0-1
 - Redis 5.0.0 - Released Wed Oct 17 13:28:26 CEST 2018
 - Upgrade urgency CRITICAL: Several fixes to streams AOF and replication.
