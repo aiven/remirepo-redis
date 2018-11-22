@@ -31,7 +31,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.1
+%global upstream_ver 5.0.2
 #global upstream_pre RC6
 %global gh_commit    5f967165efae3fed5b52b9531a01b757cfcfab92
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -41,7 +41,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 65e68652b6cae915ea952f63edf8973cccc32567
+%global doc_commit a59c016fabe113539731621c99d52ef0d656dbae
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
@@ -401,6 +401,11 @@ fi
 
 
 %changelog
+* Thu Nov 22 2018 Remi Collet <remi@remirepo.net> - 5.0.2-1
+- Redis 5.0.2 - Released Thu Nov 22 11:22:37 CET 2018
+- Upgrade urgency: CRITICAL if you use streams and consumer groups.
+  HIGH if you use redis-cli with Redis Cluster. LOW otherwise.
+
 * Wed Nov  7 2018 Remi Collet <remi@remirepo.net> - 5.0.1-1
 - Redis 5.0.1 - Released Wed Nov 07 13:09:30 CET 2018
 - Upgrade urgency: URGENT if you use Redis Streams. MODERATE otherwise.
