@@ -31,9 +31,9 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.2
+%global upstream_ver 5.0.3
 #global upstream_pre RC6
-%global gh_commit    5f967165efae3fed5b52b9531a01b757cfcfab92
+%global gh_commit    a1e79fc9b2f42f04a8ab59c05c3228931adcd0a6
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -401,6 +401,10 @@ fi
 
 
 %changelog
+* Wed Dec 12 2018 Remi Collet <remi@remirepo.net> - 5.0.3-1
+- Redis 5.0.3 - Released Tue Dec 11 18:17:26 CET 2018
+- Upgrade urgency HIGH: Redis 5 is consolidating, upgrading is a good idea.
+
 * Thu Nov 22 2018 Remi Collet <remi@remirepo.net> - 5.0.2-1
 - Redis 5.0.2 - Released Thu Nov 22 11:22:37 CET 2018
 - Upgrade urgency: CRITICAL if you use streams and consumer groups.
