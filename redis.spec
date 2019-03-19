@@ -31,7 +31,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.3
+%global upstream_ver 5.0.4
 #global upstream_pre RC6
 %global gh_commit    a1e79fc9b2f42f04a8ab59c05c3228931adcd0a6
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -41,7 +41,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit a59c016fabe113539731621c99d52ef0d656dbae
+%global doc_commit 8c322492b0ad14067bd4cebce20f3509d989370d
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
@@ -197,7 +197,7 @@ mv deps/jemalloc/COPYING COPYING-jemalloc
 mv deps/lua/COPYRIGHT    COPYRIGHT-lua
 mv deps/hiredis/COPYING  COPYING-hiredis
 
-# Configuration file changes and additions
+# Configuration file changes
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/redis.log|g' redis.conf
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/sentinel.log|g' sentinel.conf
 sed -i -e 's|^dir .*$|dir /var/lib/redis|g' redis.conf
@@ -401,6 +401,10 @@ fi
 
 
 %changelog
+* Tue Mar 19 2019 Nathan Scott <nathans@redhat.com> - 5.0.4-1
+- Upstream 5.0.4 release and redis-doc updates.
+- Fix sentinel.conf logfile line addition.
+
 * Wed Dec 12 2018 Remi Collet <remi@remirepo.net> - 5.0.3-1
 - Redis 5.0.3 - Released Tue Dec 11 18:17:26 CET 2018
 - Upgrade urgency HIGH: Redis 5 is consolidating, upgrading is a good idea.
