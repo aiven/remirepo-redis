@@ -15,7 +15,7 @@
 %global with_jemalloc 0
 %endif
 
-%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
+%if 0%{?fedora} < 30 && 0%{?rhel} < 8
 %global with_redistrib 1
 %else
 %global with_redistrib 0
@@ -31,7 +31,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.4
+%global upstream_ver 5.0.5
 #global upstream_pre RC6
 %global gh_commit    a1e79fc9b2f42f04a8ab59c05c3228931adcd0a6
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -45,7 +45,7 @@
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{rpmmacrodir} not usable on EL-6
-%global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
+%global macrosdir %(d=%{_rpmmacrodir}; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
@@ -94,6 +94,11 @@ BuildRequires:     tcl
 %if 0%{?with_systemd}
 BuildRequires:     systemd
 %endif
+
+%if ! %{?with_redistrib}
+Obsoletes:         redis-trib < %{version}-%{release}
+%endif
+
 # Required for redis-shutdown
 Requires:          /bin/awk
 Requires:          logrotate
@@ -401,6 +406,12 @@ fi
 
 
 %changelog
+* Thu May 16 2019 Remi Collet <remi@remirepo.net> - 5.0.5-1
+- Redis 5.0.5 - Released Wed May 15 17:57:41 CEST 2019
+- Upgrade urgency CRITICAL: This release fixes an important AOF
+  fysnc bug and other less critical issues.
+- drop redis-trib sub-package now in redis-cli (F30, EL8)
+
 * Tue Mar 19 2019 Nathan Scott <nathans@redhat.com> - 5.0.4-1
 - Upstream 5.0.4 release and redis-doc updates.
 - Fix sentinel.conf logfile line addition.
