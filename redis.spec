@@ -44,8 +44,8 @@
 %global doc_commit 8c322492b0ad14067bd4cebce20f3509d989370d
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
-# %%{rpmmacrodir} not usable on EL-6
-%global macrosdir %(d=%{_rpmmacrodir}; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
+# %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
+%global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
