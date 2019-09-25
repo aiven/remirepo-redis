@@ -9,7 +9,7 @@
 #
 %global _hardened_build 1
 
-%if 0%{?fedora} >= 29
+%if 0
 %global with_jemalloc 1
 %else
 %global with_jemalloc 0
@@ -31,7 +31,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.5
+%global upstream_ver 5.0.6
 #global upstream_pre RC6
 %global gh_commit    a1e79fc9b2f42f04a8ab59c05c3228931adcd0a6
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -41,7 +41,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 8c322492b0ad14067bd4cebce20f3509d989370d
+%global doc_commit 685cc5a4d323203d8e1eb85de3adc47830687207
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -406,6 +406,11 @@ fi
 
 
 %changelog
+* Wed Sep 25 2019 Remi Collet <remi@remirepo.net> - 5.0.6-1
+- Redis 5.0.6 - Released Wed Sep 25 12:33:56 CEST 2019
+- Upgrade urgency CRITICAL: Only in case of exposed instances
+  to untrusted users.
+
 * Thu May 16 2019 Remi Collet <remi@remirepo.net> - 5.0.5-1
 - Redis 5.0.5 - Released Wed May 15 17:57:41 CEST 2019
 - Upgrade urgency CRITICAL: This release fixes an important AOF
