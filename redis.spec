@@ -31,9 +31,9 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.7
-#global upstream_pre RC6
-%global gh_commit    a1e79fc9b2f42f04a8ab59c05c3228931adcd0a6
+%global upstream_ver 6.0
+%global upstream_pre RC1
+%global gh_commit    baafd30ba6e64a3f796328a6f840e5e6fb7a9e62
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -41,7 +41,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 4cd19bb1c3e3e00a8ff62a1dec5c2c6bcf9bc4bf
+%global doc_commit 418c5e4d169b637133a3d8d077973a38ae2a882a
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -82,6 +82,12 @@ Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.pat
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
 
 BuildRequires:     gcc
+%if 0%{?rhel} == 6
+BuildRequires:  devtoolset-6-toolchain
+%endif
+%if 0%{?rhel} == 7
+BuildRequires:  devtoolset-8-toolchain
+%endif
 %if %{?with_jemalloc}
 BuildRequires:     jemalloc-devel
 %else
@@ -92,6 +98,7 @@ BuildRequires:     procps-ng
 BuildRequires:     tcl
 %endif
 %if 0%{?with_systemd}
+BuildRequires:     pkgconfig(libsystemd)
 BuildRequires:     systemd
 %endif
 
@@ -224,9 +231,28 @@ sed -e '/GCC diagnostic/d' -i src/lzf_d.c
 %global make_flags	DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
 
 %build
+%if 0%{?rhel} == 6
+source /opt/rh/devtoolset-6/enable
+g++ --version
+%endif
+%if 0%{?rhel} == 7
+source /opt/rh/devtoolset-8/enable
+g++ --version
+%endif
+
 make %{?_smp_mflags} %{make_flags} all
 
+
 %install
+%if 0%{?rhel} == 6
+source /opt/rh/devtoolset-6/enable
+g++ --version
+%endif
+%if 0%{?rhel} == 7
+source /opt/rh/devtoolset-8/enable
+g++ --version
+%endif
+
 make %{make_flags} install
 
 # Filesystem.
@@ -406,6 +432,10 @@ fi
 
 
 %changelog
+* Fri Dec 20 2019 Remi Collet <remi@remirepo.net> - 5.0.0~RC1-1
+- update to 6.0-RC1 (5.9.101)
+- build using GCC 8 on EL-7, GCC 6 on EL-6 (devtoolset)
+
 * Wed Nov 20 2019 Remi Collet <remi@remirepo.net> - 5.0.7-1
 - Redis 5.0.7 - Released Tue Nov 19 17:52:44 CET 2019
 - Upgrade urgency HIGH: many issues fixed, some may have an impact.
