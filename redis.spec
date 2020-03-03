@@ -27,6 +27,12 @@
 %global with_systemd 0
 %endif
 
+%if 0%{?fedora} >= 23 || 0%{?rhel} >= 7
+%global with_tls 1
+%else
+%global with_tls 0
+%endif
+
 # Tests fail in mock, not in local build.
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
@@ -49,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -80,6 +86,8 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
+# https://github.com/antirez/redis/pull/6691 - gcc v10
+Patch0003:         0003-Mark-extern-definition-of-SDS_NOINIT-in-sds.h.patch
 
 BuildRequires:     gcc
 %if 0%{?rhel} == 6
@@ -100,6 +108,9 @@ BuildRequires:     tcl
 %if 0%{?with_systemd}
 BuildRequires:     pkgconfig(libsystemd)
 BuildRequires:     systemd
+%endif
+%if 0%{?with_tls}
+BuildRequires:     openssl-devel >= 1.0.2
 %endif
 
 %if ! %{?with_redistrib}
@@ -196,6 +207,7 @@ and removal, status checks, resharding, rebalancing, and other operations.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 %if %{?with_jemalloc}
 rm -frv deps/jemalloc
@@ -228,7 +240,11 @@ sed -e '/GCC diagnostic/d' -i src/lzf_d.c
 %endif
 
 %global malloc_flags	MALLOC=jemalloc
+%if 0%{?with_tls}
+%global make_flags	DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix} BUILD_TLS=yes
+%else
 %global make_flags	DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
+%endif
 
 %build
 %if 0%{?rhel} == 6
@@ -432,7 +448,11 @@ fi
 
 
 %changelog
-* Fri Dec 20 2019 Remi Collet <remi@remirepo.net> - 5.0.0~RC1-1
+* Tue Mar  3 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC1-2
+- enable TLS support (EL-6 excepted)
+- patch extern SDS_NOINIT definition for gcc 10 (F32)
+
+* Fri Dec 20 2019 Remi Collet <remi@remirepo.net> - 6.0.0~RC1-1
 - update to 6.0-RC1 (5.9.101)
 - build using GCC 8 on EL-7, GCC 6 on EL-6 (devtoolset)
 
