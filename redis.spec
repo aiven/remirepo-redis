@@ -55,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           3%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -448,6 +448,10 @@ fi
 
 
 %changelog
+* Tue Mar  3 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC1-3
+- ensure never daemonized with systemd
+  see https://github.com/remicollet/remirepo/issues/133
+
 * Tue Mar  3 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC1-2
 - enable TLS support (EL-6 excepted)
 - patch extern SDS_NOINIT definition for gcc 10 (F32)
