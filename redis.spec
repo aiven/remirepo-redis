@@ -38,8 +38,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 6.0
-%global upstream_pre RC1
-%global gh_commit    baafd30ba6e64a3f796328a6f840e5e6fb7a9e62
+%global upstream_pre RC2
+%global gh_commit    e74e68c84f5eba8013769087c9a46cab811b8417
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -47,7 +47,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 418c5e4d169b637133a3d8d077973a38ae2a882a
+%global doc_commit 233c4cdd96e48273bff51bf30d23b7ee75b39b53
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -55,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           3%{?dist}
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -86,8 +86,6 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
-# https://github.com/antirez/redis/pull/6691 - gcc v10
-Patch0003:         0003-Mark-extern-definition-of-SDS_NOINIT-in-sds.h.patch
 
 BuildRequires:     gcc
 %if 0%{?rhel} == 6
@@ -207,7 +205,6 @@ and removal, status checks, resharding, rebalancing, and other operations.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
 
 %if %{?with_jemalloc}
 rm -frv deps/jemalloc
@@ -448,6 +445,9 @@ fi
 
 
 %changelog
+* Thu Mar  5 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC2-1
+- update to 6.0-RC2 (5.9.102)
+
 * Tue Mar  3 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC1-3
 - ensure never daemonized with systemd
   see https://github.com/remicollet/remirepo/issues/133
