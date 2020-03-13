@@ -31,7 +31,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 5.0.7
+%global upstream_ver 5.0.8
 #global upstream_pre RC6
 %global gh_commit    a1e79fc9b2f42f04a8ab59c05c3228931adcd0a6
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -41,7 +41,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 4cd19bb1c3e3e00a8ff62a1dec5c2c6bcf9bc4bf
+%global doc_commit 3a41bc371a894cf63af99046f61052614379f7b0
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -406,6 +406,10 @@ fi
 
 
 %changelog
+* Fri Mar 13 2020 Remi Collet <remi@remirepo.net> - 5.0.8-1
+- Redis 5.0.8 - Released Thu Mar 12 16:05:41 CET 2020
+- Upgrade urgency HIGH: This release fixes security issues.
+
 * Wed Nov 20 2019 Remi Collet <remi@remirepo.net> - 5.0.7-1
 - Redis 5.0.7 - Released Tue Nov 19 17:52:44 CET 2019
 - Upgrade urgency HIGH: many issues fixed, some may have an impact.
