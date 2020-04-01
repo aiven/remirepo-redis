@@ -38,8 +38,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 6.0
-%global upstream_pre RC2
-%global gh_commit    e74e68c84f5eba8013769087c9a46cab811b8417
+%global upstream_pre RC3
+%global gh_commit    957e917a84ac9979f18145a4d0b53386f5ce4fd9
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -47,7 +47,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 233c4cdd96e48273bff51bf30d23b7ee75b39b53
+%global doc_commit f25893246da213d3d4869fcc8a5316e39a96a6ad
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -445,6 +445,9 @@ fi
 
 
 %changelog
+* Wed Apr  1 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC3-1
+- update to 6.0-RC3 (5.9.103)
+
 * Thu Mar  5 2020 Remi Collet <remi@remirepo.net> - 6.0.0~RC2-1
 - update to 6.0-RC2 (5.9.102)
 
