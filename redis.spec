@@ -37,7 +37,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.0
+%global upstream_ver 6.0.1
 #global upstream_pre RC4
 %global gh_commit    7cf0a77d59840fe3b1cdc5a98c91ce99c61fd3e3
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -47,7 +47,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit e6d396c2b4d21039988fbc163c1b688fe398ee55
+%global doc_commit 96b8379e722c2e2e0996dc5577007b3a994128f3
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -236,12 +236,17 @@ fi
 sed -e '/GCC diagnostic/d' -i src/lzf_d.c
 %endif
 
-%global malloc_flags	MALLOC=jemalloc
+%global malloc_flags MALLOC=jemalloc
 %if 0%{?with_tls}
-%global make_flags	DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix} BUILD_TLS=yes
-%else
-%global make_flags	DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" %{malloc_flags} INSTALL="install -p" PREFIX=%{buildroot}%{_prefix}
+%global tls_flags    BUILD_TLS=yes
 %endif
+%if 0%{?with_systemd}
+%global sysd_flags   BUILD_WITH_SYSTEMD=yes
+%endif
+
+%global make_flags	 DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" INSTALL="install -p" PREFIX=%{buildroot}%{_prefix} %{?malloc_flags} %{?tls_flags} %{?sysd_flags}
+: %{make_flags}
+
 
 %build
 %if 0%{?rhel} == 6
@@ -445,6 +450,11 @@ fi
 
 
 %changelog
+* Sat May  2 2020 Remi Collet <remi@remirepo.net> - 6.0.1-1
+- Redis 6.0.1 - Released Sat May 02 00:06:07 CEST 2020
+- Upgrade urgency HIGH:
+  This release fixes a crash when builiding against Libc malloc.
+
 * Thu Apr 30 2020 Remi Collet <remi@remirepo.net> - 6.0.0-1
 - Redis 6.0.0 GA - Released Thu Apr 30 14:55:02 CEST 2020
 - Upgrade urgency CRITICAL: many bugs fixed compared to the last RC
