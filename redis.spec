@@ -37,7 +37,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.1
+%global upstream_ver 6.0.2
 #global upstream_pre RC4
 %global gh_commit    7cf0a77d59840fe3b1cdc5a98c91ce99c61fd3e3
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -47,7 +47,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 96b8379e722c2e2e0996dc5577007b3a994128f3
+%global doc_commit c0853c162defc400e3fba311dbde2622a29653a4
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -286,8 +286,8 @@ install -pDm644 %{S:1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -pDm640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 install -pDm640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}-sentinel.conf
 
-# Install systemd unit files.
 %if 0%{?with_systemd}
+# Install systemd unit files.
 mkdir -p %{buildroot}%{_unitdir}
 install -pm644 %{S:3} %{buildroot}%{_unitdir}
 install -pm644 %{S:2} %{buildroot}%{_unitdir}
@@ -295,7 +295,8 @@ install -pm644 %{S:2} %{buildroot}%{_unitdir}
 # Install systemd limit files (requires systemd >= 204)
 install -p -D -m 644 %{S:7} %{buildroot}%{_sysconfdir}/systemd/system/%{name}.service.d/limit.conf
 install -p -D -m 644 %{S:7} %{buildroot}%{_sysconfdir}/systemd/system/%{name}-sentinel.service.d/limit.conf
-%else # install SysV service files
+%else
+# install SysV service files
 install -pDm755 %{S:4} %{buildroot}%{_initrddir}/%{name}-sentinel
 install -pDm755 %{S:5} %{buildroot}%{_initrddir}/%{name}
 install -p -D -m 644 %{S:8} %{buildroot}%{_sysconfdir}/security/limits.d/95-%{name}.conf
@@ -450,6 +451,12 @@ fi
 
 
 %changelog
+* Sat May 16 2020 Remi Collet <remi@remirepo.net> - 6.0.2-1
+- Redis 6.0.2 - Released Fri May 15 22:24:36 CEST 2020
+- Upgrade urgency MODERATE: many not critical bugfixes in different areas.
+  Critical fix to client side caching when keys are evicted from the
+  tracking table but no notifications are sent.
+
 * Sat May  2 2020 Remi Collet <remi@remirepo.net> - 6.0.1-1
 - Redis 6.0.1 - Released Sat May 02 00:06:07 CEST 2020
 - Upgrade urgency HIGH:
