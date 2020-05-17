@@ -37,7 +37,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.2
+%global upstream_ver 6.0.3
 #global upstream_pre RC4
 %global gh_commit    7cf0a77d59840fe3b1cdc5a98c91ce99c61fd3e3
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -451,6 +451,10 @@ fi
 
 
 %changelog
+* Sun May 17 2020 Remi Collet <remi@remirepo.net> - 6.0.3-1
+- Redis 6.0.3 - Released Sat May 16 18:10:21 CEST 2020
+- Upgrade urgency CRITICAL: a crash introduced in 6.0.2 is now fixed.
+
 * Sat May 16 2020 Remi Collet <remi@remirepo.net> - 6.0.2-1
 - Redis 6.0.2 - Released Fri May 15 22:24:36 CEST 2020
 - Upgrade urgency MODERATE: many not critical bugfixes in different areas.
