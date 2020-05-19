@@ -93,9 +93,7 @@ BuildRequires:  devtoolset-6-toolchain
 %endif
 %if 0%{?rhel} == 7
 BuildRequires:  devtoolset-8-toolchain
-%ifarch %{arm}
 BuildRequires:  devtoolset-8-libatomic-devel
-%endif
 %endif
 %if %{?with_jemalloc}
 BuildRequires:     jemalloc-devel
