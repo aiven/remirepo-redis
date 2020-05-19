@@ -55,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -93,6 +93,9 @@ BuildRequires:  devtoolset-6-toolchain
 %endif
 %if 0%{?rhel} == 7
 BuildRequires:  devtoolset-8-toolchain
+%ifarch %{arm}
+BuildRequires:  devtoolset-8-libatomic-devel
+%endif
 %endif
 %if %{?with_jemalloc}
 BuildRequires:     jemalloc-devel
@@ -451,6 +454,9 @@ fi
 
 
 %changelog
+* Mon May 18 2020 Pablo Greco <pgreco@centosproject.org> - 6.0.3-2
+- Fix build on armhfp/el7
+
 * Sun May 17 2020 Remi Collet <remi@remirepo.net> - 6.0.3-1
 - Redis 6.0.3 - Released Sat May 16 18:10:21 CEST 2020
 - Upgrade urgency CRITICAL: a crash introduced in 6.0.2 is now fixed.
