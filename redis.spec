@@ -37,7 +37,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.3
+%global upstream_ver 6.0.4
 #global upstream_pre RC4
 %global gh_commit    7cf0a77d59840fe3b1cdc5a98c91ce99c61fd3e3
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -47,7 +47,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit c0853c162defc400e3fba311dbde2622a29653a4
+%global doc_commit 6c044c7527e77426b1fb81a741edbf7e0775ff60
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpm)s-macros)
@@ -55,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -452,6 +452,11 @@ fi
 
 
 %changelog
+* Fri May 22 2020 Remi Collet <remi@remirepo.net> - 6.0.4-1
+- Redis 6.0.4 - Released Fri May 22 13:19:38 CEST 2020
+- Upgrade urgency HIGH: many bugs fixed in the path of bringing
+  Redis 6 to battle-tested level.
+
 * Mon May 18 2020 Pablo Greco <pgreco@centosproject.org> - 6.0.3-2
 - Fix build on armhfp/el7
 
