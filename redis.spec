@@ -37,7 +37,7 @@
 %global with_tests %{?_with_tests:1}%{!?_with_tests:0}
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.3
+%global upstream_ver 6.0.4
 #global upstream_pre RC4
 %global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -55,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           3%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -455,6 +455,10 @@ fi
 
 
 %changelog
+* Thu May 28 2020 Remi Collet <remi@remirepo.net> - 6.0.4-2
+- Redis 6.0.4 - Released Thu May 28 11:36:45 CEST 2020
+- Upgrade urgency CRITICAL: this release fixes a severe replication bug.
+
 * Thu May 28 2020 Remi Collet <remi@remirepo.net> - 6.0.3-3
 - add comment for TimeoutStartSec and TimeoutStopSec in limit.conf
 - fix missing notification to systemd for sentinel
