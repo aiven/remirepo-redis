@@ -39,7 +39,7 @@
 # Pre-version are only available in github
 %global upstream_ver 6.0.3
 #global upstream_pre RC4
-%global gh_commit    7cf0a77d59840fe3b1cdc5a98c91ce99c61fd3e3
+%global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -55,7 +55,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           3%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -86,6 +86,8 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
+# https://github.com/antirez/redis/pull/7168 - notify systemd
+Patch0003:         0003-Notify-systemd-on-sentinel-startup.patch
 
 BuildRequires:     gcc
 %if 0%{?rhel} == 6
@@ -206,6 +208,7 @@ and removal, status checks, resharding, rebalancing, and other operations.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 %if %{?with_jemalloc}
 rm -frv deps/jemalloc
@@ -452,6 +455,11 @@ fi
 
 
 %changelog
+* Thu May 28 2020 Remi Collet <remi@remirepo.net> - 6.0.3-3
+- add comment for TimeoutStartSec and TimeoutStopSec in limit.conf
+- fix missing notification to systemd for sentinel
+  patch from https://github.com/antirez/redis/pull/7168
+
 * Mon May 18 2020 Pablo Greco <pgreco@centosproject.org> - 6.0.3-2
 - Fix build on armhfp/el7
 
