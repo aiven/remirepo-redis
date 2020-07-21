@@ -9,35 +9,32 @@
 #
 %global _hardened_build 1
 
-%if 0
-%global with_jemalloc 1
-%else
-%global with_jemalloc 0
-%endif
+# to use system libjemalloc
+%bcond_with    jemalloc
 
 %if 0%{?fedora} < 30 && 0%{?rhel} < 8
-%global with_redistrib 1
+%bcond_without redistrib
 %else
-%global with_redistrib 0
+%bcond_with    redistrib
 %endif
 
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
-%global with_systemd 1
+%bcond_without systemd
 %else
-%global with_systemd 0
+%bcond_with    systemd
 %endif
 
 %if 0%{?fedora} >= 23 || 0%{?rhel} >= 7
-%global with_tls 1
+%bcond_without tls
 %else
-%global with_tls 0
+%bcond_with    tls
 %endif
 
 # Tests fail in mock, not in local build.
-%global with_tests %{?_with_tests:1}%{!?_with_tests:0}
+%bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.5
+%global upstream_ver 6.0.6
 #global upstream_pre RC4
 %global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -47,7 +44,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 7f8699f39ba751ada570f0c3d50df09677667d21
+%global doc_commit 02423fd2f5603ae300654613a51eaee13bc5cb80
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -86,8 +83,8 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
-# https://github.com/antirez/redis/pull/7168 - notify systemd
-Patch0003:         0003-Notify-systemd-on-sentinel-startup.patch
+# https://github.com/redis/redis/pull/7543 - tail syntax
+Patch0003:         0003-fix-deprecated-tail-syntax.patch
 
 BuildRequires:     gcc
 %if 0%{?rhel} == 6
@@ -97,24 +94,24 @@ BuildRequires:  devtoolset-6-toolchain
 BuildRequires:  devtoolset-8-toolchain
 BuildRequires:  devtoolset-8-libatomic-devel
 %endif
-%if %{?with_jemalloc}
+%if %{with jemalloc}
 BuildRequires:     jemalloc-devel
 %else
 Provides:          bundled(jemalloc) = 5.1.0
 %endif
-%if 0%{?with_tests}
+%if %{with tests}
 BuildRequires:     procps-ng
 BuildRequires:     tcl
 %endif
-%if 0%{?with_systemd}
+%if %{with systemd}
 BuildRequires:     pkgconfig(libsystemd)
 BuildRequires:     systemd
 %endif
-%if 0%{?with_tls}
+%if %{with tls}
 BuildRequires:     openssl-devel >= 1.0.2
 %endif
 
-%if ! %{?with_redistrib}
+%if %{without redistrib}
 Obsoletes:         redis-trib < %{version}-%{release}
 %endif
 
@@ -122,7 +119,7 @@ Obsoletes:         redis-trib < %{version}-%{release}
 Requires:          /bin/awk
 Requires:          logrotate
 Requires(pre):     shadow-utils
-%if 0%{?with_systemd}
+%if %{with systemd}
 Requires(post):    systemd
 Requires(preun):   systemd
 Requires(postun):  systemd
@@ -187,7 +184,7 @@ Conflicts:         redis < 4.0
 Manual pages and detailed documentation for many aspects of Redis use,
 administration and development.
 
-%if 0%{?with_redistrib}
+%if %{with redistrib}
 %package           trib
 Summary:           Cluster management script for Redis
 BuildArch:         noarch
@@ -210,7 +207,7 @@ mv ../%{name}-doc-%{doc_commit} doc
 %patch0002 -p1
 %patch0003 -p1
 
-%if %{?with_jemalloc}
+%if %{with jemalloc}
 rm -frv deps/jemalloc
 # Use system jemalloc library
 sed -i -e '/cd jemalloc && /d' deps/Makefile
@@ -241,10 +238,10 @@ sed -e '/GCC diagnostic/d' -i src/lzf_d.c
 %endif
 
 %global malloc_flags MALLOC=jemalloc
-%if 0%{?with_tls}
+%if %{with tls}
 %global tls_flags    BUILD_TLS=yes
 %endif
-%if 0%{?with_systemd}
+%if %{with systemd}
 %global sysd_flags   BUILD_WITH_SYSTEMD=yes
 %endif
 
@@ -290,7 +287,7 @@ install -pDm644 %{S:1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -pDm640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 install -pDm640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}-sentinel.conf
 
-%if 0%{?with_systemd}
+%if %{with systemd}
 # Install systemd unit files.
 mkdir -p %{buildroot}%{_unitdir}
 install -pm644 %{S:3} %{buildroot}%{_unitdir}
@@ -315,7 +312,7 @@ install -pDm755 %{S:6} %{buildroot}%{_libexecdir}/%{name}-shutdown
 # Install redis module header
 install -pDm644 src/%{name}module.h %{buildroot}%{_includedir}/%{name}module.h
 
-%if 0%{?with_redistrib}
+%if %{with redistrib}
 # Install redis-trib
 install -pDm755 src/%{name}-trib.rb %{buildroot}%{_bindir}/%{name}-trib
 %endif
@@ -343,8 +340,8 @@ mkdir -p %{buildroot}%{macrosdir}
 install -pDm644 %{S:9} %{buildroot}%{macrosdir}/macros.%{name}
 
 %check
-%if 0%{?with_tests}
-%if ! %{?with_jemalloc}
+%if %{with tests}
+%if %{without jemalloc}
 # ERR Active defragmentation cannot be enabled: it requires a Redis server compiled
 # with a modified Jemalloc like the one shipped by default with the Redis source distribution
 sed -e '/memefficiency/d' -i tests/test_helper.tcl
@@ -366,7 +363,7 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 exit 0
 
 %post
-%if 0%{?with_systemd}
+%if %{with systemd}
 %systemd_post %{name}.service
 %systemd_post %{name}-sentinel.service
 %else
@@ -375,7 +372,7 @@ chkconfig --add %{name}-sentinel
 %endif
 
 %preun
-%if 0%{?with_systemd}
+%if %{with systemd}
 %systemd_preun %{name}.service
 %systemd_preun %{name}-sentinel.service
 %else
@@ -388,7 +385,7 @@ fi
 %endif
 
 %postun
-%if 0%{?with_systemd}
+%if %{with systemd}
 %systemd_postun_with_restart %{name}.service
 %systemd_postun_with_restart %{name}-sentinel.service
 %else
@@ -403,7 +400,7 @@ fi
 %license COPYING
 %license COPYRIGHT-lua
 %license COPYING-hiredis
-%if ! %{?with_jemalloc}
+%if %{without jemalloc}
 %license COPYING-jemalloc
 %endif
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
@@ -413,7 +410,7 @@ fi
 %dir %attr(0750, redis, redis) %{redis_modules_dir}
 %dir %attr(0750, redis, redis) %{_sharedstatedir}/%{name}
 %dir %attr(0750, redis, redis) %{_localstatedir}/log/%{name}
-%if 0%{?with_redistrib}
+%if %{with redistrib}
 %exclude %{_bindir}/%{name}-trib
 %endif
 %exclude %{macrosdir}
@@ -423,7 +420,7 @@ fi
 %{_libexecdir}/%{name}-*
 %{_mandir}/man1/%{name}*
 %{_mandir}/man5/%{name}*
-%if 0%{?with_systemd}
+%if %{with systemd}
 %{_unitdir}/%{name}.service
 %{_unitdir}/%{name}-sentinel.service
 %dir %{_sysconfdir}/systemd/system/%{name}.service.d
@@ -447,7 +444,7 @@ fi
 %docdir %{_docdir}/%{name}
 %{_docdir}/%{name}
 
-%if 0%{?with_redistrib}
+%if %{with redistrib}
 %files trib
 %license COPYING
 %{_bindir}/%{name}-trib
@@ -455,6 +452,11 @@ fi
 
 
 %changelog
+* Tue Jul 21 2020 Remi Collet <remi@remirepo.net> - 6.0.6-1
+- Redis 6.0.6 - Released Mon Jul 20 09:31:30 IDT 2020
+- Upgrade urgency MODERATE: several bugs with moderate impact are fixed here.
+- open https://github.com/redis/redis/pull/7543 fix deprecated tail syntax
+
 * Wed Jun 10 2020 Remi Collet <remi@remirepo.net> - 6.0.5-1
 - Redis 6.0.5 - Released Tue Jun 09 11:56:08 CEST 2020
 - Upgrade urgency MODERATE: several bugs with moderate impact are fixed here.
