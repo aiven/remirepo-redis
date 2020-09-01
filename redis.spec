@@ -34,7 +34,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.6
+%global upstream_ver 6.0.7
 #global upstream_pre RC4
 %global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -44,7 +44,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 02423fd2f5603ae300654613a51eaee13bc5cb80
+%global doc_commit 2c335a8226789afae2b5a2ebbd689933b0a5e01a
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -83,8 +83,6 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
-# https://github.com/redis/redis/pull/7543 - tail syntax
-Patch0003:         0003-fix-deprecated-tail-syntax.patch
 
 BuildRequires:     gcc
 %if 0%{?rhel} == 6
@@ -205,7 +203,6 @@ and removal, status checks, resharding, rebalancing, and other operations.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
 
 %if %{with jemalloc}
 rm -frv deps/jemalloc
@@ -452,6 +449,11 @@ fi
 
 
 %changelog
+* Tue Sep  1 2020 Remi Collet <remi@remirepo.net> - 6.0.7-1
+- Redis 6.0.7 - Released Fri Aug 28 11:05:09 IDT 2020
+- Upgrade urgency MODERATE: several bugs with moderate impact are fixed.
+- drop patch merged upstream
+
 * Tue Jul 21 2020 Remi Collet <remi@remirepo.net> - 6.0.6-1
 - Redis 6.0.6 - Released Mon Jul 20 09:31:30 IDT 2020
 - Upgrade urgency MODERATE: several bugs with moderate impact are fixed here.

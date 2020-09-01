@@ -1,5 +1,7 @@
+clog
 package-*.xml
 *.tgz
+*.tar.bz2
 *.tar.gz
 *.tar.xz
 *.tar.xz.asc
