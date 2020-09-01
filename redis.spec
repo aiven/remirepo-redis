@@ -60,7 +60,7 @@ URL:               http://redis.io
 %if 0%{?upstream_pre:1}
 Source0:           https://github.com/%{gh_owner}/%{gh_project}/archive/%{gh_commit}/%{name}-%{upstream_ver}%{upstream_pre}-%{gh_short}.tar.gz
 %else
-Source0:           http://download.redis.io/releases/%{name}-%{version}.tar.gz
+Source0:           https://download.redis.io/releases/%{name}-%{version}.tar.gz
 %endif
 Source1:           %{name}.logrotate
 Source2:           %{name}-sentinel.service
