@@ -34,7 +34,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.8
+%global upstream_ver 6.0.9
 #global upstream_pre RC4
 %global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -44,7 +44,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 25555fe05a571454fa0f11dca28cb5796e04112f
+%global doc_commit 8d4bf9bc476829a84a055c049be72634d6e938df
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -453,6 +453,10 @@ fi
 
 
 %changelog
+* Tue Oct 27 2020 Remi Collet <remi@remirepo.net> - 6.0.9-1
+- Redis 6.0.9 - Released Mon Oct 26 10:37:47 IST 2020
+- Upgrade urgency: MODERATE.
+
 * Thu Sep 10 2020 Remi Collet <remi@remirepo.net> - 6.0.8-1
 - Redis 6.0.8 - Released Wed Sep 09 23:34:17 IDT 2020
 - Upgrade urgency HIGH: Anyone who's using Redis 6.0.7 with Sentinel or
