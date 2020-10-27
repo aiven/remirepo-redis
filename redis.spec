@@ -95,6 +95,7 @@ BuildRequires:  devtoolset-8-libatomic-devel
 %if %{with jemalloc}
 BuildRequires:     jemalloc-devel
 %else
+# from deps/jemalloc/VERSION
 Provides:          bundled(jemalloc) = 5.1.0
 %endif
 %if %{with tests}
@@ -127,9 +128,12 @@ Requires(preun):   chkconfig
 Requires(preun):   initscripts
 Requires(postun):  initscripts
 %endif
-Provides:          bundled(hiredis)
-Provides:          bundled(lua-libs)
-Provides:          bundled(linenoise)
+# from deps/hiredis/hiredis.h
+Provides:          bundled(hiredis) = 0.14.0
+# from deps/lua/src/lua.h
+Provides:          bundled(lua-libs) = 5.1.5
+# from deps/linenoise/linenoise.h
+Provides:          bundled(linenoise) = 1.0
 Provides:          bundled(lzf)
 
 %global redis_modules_abi 1
