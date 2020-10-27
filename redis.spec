@@ -34,9 +34,9 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.8
+%global upstream_ver 6.0.9
 #global upstream_pre RC4
-%global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
+%global gh_commit    25214bd7dc2f4c995d76020e95180eb4e6d51672
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     antirez
 %global gh_project   redis
@@ -449,6 +449,9 @@ fi
 
 
 %changelog
+* Tue Oct 27 2020  <heikju@aiven.io> - 6.0.9-1
+- Redis 6.0.9 - Released Mon Oct 26 10:37:47 IST 2020
+
 * Thu Sep 10 2020 Remi Collet <remi@remirepo.net> - 6.0.8-1
 - Redis 6.0.8 - Released Wed Sep 09 23:34:17 IDT 2020
 - Upgrade urgency HIGH: Anyone who's using Redis 6.0.7 with Sentinel or
