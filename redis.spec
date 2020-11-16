@@ -52,7 +52,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -83,6 +83,9 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
+# https://github.com/antirez/redis/pull/8058 - config rewrite
+Patch0003:         0003-Fix-8051-use-old-way-as-fallback-to-save-configurati.patch
+
 
 BuildRequires:     gcc
 %if 0%{?rhel} == 6
@@ -207,6 +210,7 @@ and removal, status checks, resharding, rebalancing, and other operations.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 %if %{with jemalloc}
 rm -frv deps/jemalloc
@@ -453,6 +457,10 @@ fi
 
 
 %changelog
+* Mon Nov 16 2020 Remi Collet <remi@remirepo.net> - 6.0.9-2
+- fix broken config rewrite feature using patch from
+  https://github.com/redis/redis/pull/8058
+
 * Tue Oct 27 2020 Remi Collet <remi@remirepo.net> - 6.0.9-1
 - Redis 6.0.9 - Released Mon Oct 26 10:37:47 IST 2020
 - Upgrade urgency: MODERATE.
