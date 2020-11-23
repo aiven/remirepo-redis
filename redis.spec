@@ -52,7 +52,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           3%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -83,8 +83,6 @@ Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 # https://github.com/antirez/redis/pull/3494 - symlink
 Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
-# https://github.com/antirez/redis/pull/8058 - config rewrite
-Patch0003:         0003-Fix-8051-use-old-way-as-fallback-to-save-configurati.patch
 
 
 BuildRequires:     gcc
@@ -210,7 +208,6 @@ and removal, status checks, resharding, rebalancing, and other operations.
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
 
 %if %{with jemalloc}
 rm -frv deps/jemalloc
@@ -289,8 +286,8 @@ install -d %{buildroot}%{redis_modules_dir}
 install -pDm644 %{S:1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Install configuration files.
-install -pDm640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
-install -pDm640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}-sentinel.conf
+install -pDm640 %{name}.conf  %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
+install -pDm640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}/sentinel.conf
 
 %if %{with systemd}
 # Install systemd unit files.
@@ -368,6 +365,26 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 exit 0
 
 %post
+if [ -f %{_sysconfdir}/%{name}.conf ]; then
+  if [ -f %{_sysconfdir}/%{name}/%{name}.conf.rpmnew ]; then
+    rm    %{_sysconfdir}/%{name}/%{name}.conf.rpmnew
+  fi
+  if [ -f %{_sysconfdir}/%{name}/%{name}.conf ]; then
+    mv    %{_sysconfdir}/%{name}/%{name}.conf %{_sysconfdir}/%{name}/%{name}.conf.rpmnew
+  fi
+  mv %{_sysconfdir}/%{name}.conf %{_sysconfdir}/%{name}/%{name}.conf
+  echo -e "\nWarning: %{name} configuration is now in %{_sysconfdir}/%{name} directory\n"
+fi
+if [ -f %{_sysconfdir}/%{name}-sentinel.conf ]; then
+  if [ -f %{_sysconfdir}/%{name}/sentinel.conf.rpmnew ]; then
+    rm    %{_sysconfdir}/%{name}/sentinel.conf.rpmnew
+  fi
+  if [ -f %{_sysconfdir}/%{name}/sentinel.conf ]; then
+    mv    %{_sysconfdir}/%{name}/sentinel.conf %{_sysconfdir}/%{name}/sentinel.conf.rpmnew
+  fi
+  mv %{_sysconfdir}/%{name}-sentinel.conf %{_sysconfdir}/%{name}/sentinel.conf
+fi
+
 %if %{with systemd}
 %systemd_post %{name}.service
 %systemd_post %{name}-sentinel.service
@@ -409,8 +426,9 @@ fi
 %license COPYING-jemalloc
 %endif
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
-%attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}.conf
-%attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}-sentinel.conf
+%attr(0750, redis, root) %dir %{_sysconfdir}/%{name}
+%attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%attr(0640, redis, root) %config(noreplace) %{_sysconfdir}/%{name}/sentinel.conf
 %dir %attr(0750, redis, redis) %{_libdir}/%{name}
 %dir %attr(0750, redis, redis) %{redis_modules_dir}
 %dir %attr(0750, redis, redis) %{_sharedstatedir}/%{name}
@@ -457,6 +475,10 @@ fi
 
 
 %changelog
+* Mon Nov 23 2020 Remi Collet <remi@remirepo.net> - 6.0.9-3
+- move configuration in /etc/redis per upstream recommendation
+  see https://github.com/redis/redis/issues/8051
+
 * Mon Nov 16 2020 Remi Collet <remi@remirepo.net> - 6.0.9-2
 - fix broken config rewrite feature using patch from
   https://github.com/redis/redis/pull/8058

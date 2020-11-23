@@ -20,7 +20,7 @@ name="redis-server"
 exec="/usr/bin/$name"
 shut="/usr/libexec/redis-shutdown"
 pidfile="/var/run/redis/redis.pid"
-REDIS_CONFIG="/etc/redis.conf"
+REDIS_CONFIG="/etc/redis/redis.conf"
 
 [ -e /etc/sysconfig/redis ] && . /etc/sysconfig/redis
 

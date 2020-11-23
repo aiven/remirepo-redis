@@ -20,7 +20,7 @@ name="redis-sentinel"
 exec="/usr/bin/$name"
 shut="/usr/libexec/redis-shutdown"
 pidfile="/var/run/redis/sentinel.pid"
-SENTINEL_CONFIG="/etc/redis-sentinel.conf"
+SENTINEL_CONFIG="/etc/redis/sentinel.conf"
 
 [ -e /etc/sysconfig/redis-sentinel ] && . /etc/sysconfig/redis-sentinel
 
