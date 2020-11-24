@@ -52,7 +52,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           3%{?dist}
+Release:           4%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -364,8 +364,18 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 -c 'Redis Database Server' %{name} &> /dev/null
 exit 0
 
+%if 0%{?fedora} < 34 && 0%{?rhel} < 9
+%posttrans
+if [ -f %{_sysconfdir}/%{name}/%{name}.conf -a ! -f %{_sysconfdir}/%{name}.conf ]; then
+  ln -s %{name}/%{name}.conf %{_sysconfdir}/%{name}.conf
+fi
+if [ -f %{_sysconfdir}/%{name}/sentinel.conf -a ! -f %{_sysconfdir}/%{name}-sentinel.conf ]; then
+  ln -s %{name}/sentinel.conf %{_sysconfdir}/%{name}-sentinel.conf
+fi
+%endif
+
 %post
-if [ -f %{_sysconfdir}/%{name}.conf ]; then
+if [ -f %{_sysconfdir}/%{name}.conf -a ! -L %{_sysconfdir}/%{name}.conf ]; then
   if [ -f %{_sysconfdir}/%{name}/%{name}.conf.rpmnew ]; then
     rm    %{_sysconfdir}/%{name}/%{name}.conf.rpmnew
   fi
@@ -375,7 +385,7 @@ if [ -f %{_sysconfdir}/%{name}.conf ]; then
   mv %{_sysconfdir}/%{name}.conf %{_sysconfdir}/%{name}/%{name}.conf
   echo -e "\nWarning: %{name} configuration is now in %{_sysconfdir}/%{name} directory\n"
 fi
-if [ -f %{_sysconfdir}/%{name}-sentinel.conf ]; then
+if [ -f %{_sysconfdir}/%{name}-sentinel.conf  -a ! -L %{_sysconfdir}/%{name}-sentinel.conf  ]; then
   if [ -f %{_sysconfdir}/%{name}/sentinel.conf.rpmnew ]; then
     rm    %{_sysconfdir}/%{name}/sentinel.conf.rpmnew
   fi
@@ -475,6 +485,9 @@ fi
 
 
 %changelog
+* Tue Nov 24 2020 Remi Collet <remi@remirepo.net> - 6.0.9-4
+- create symlink for deployment tools
+
 * Mon Nov 23 2020 Remi Collet <remi@remirepo.net> - 6.0.9-3
 - move configuration in /etc/redis per upstream recommendation
   see https://github.com/redis/redis/issues/8051
