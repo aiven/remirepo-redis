@@ -34,17 +34,17 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.0.9
-#global upstream_pre RC4
-%global gh_commit    f092dd3227cc74978853e379c0a7731bdaa324af
+%global upstream_ver 6.2
+%global upstream_pre RC1
+%global gh_commit    b8c67ce41b51247c02a639929e4fab20189afa1e
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
-%global gh_owner     antirez
+%global gh_owner     redis
 %global gh_project   redis
 
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
-# https://github.com/antirez/redis-doc/commits/master
-%global doc_commit 8d4bf9bc476829a84a055c049be72634d6e938df
+# https://github.com/redis/redis-doc/commits/master
+%global doc_commit 05631514745ea9f0a2ccc8aa6286f7ce2f29b266
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -52,7 +52,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           4%{?dist}
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -71,7 +71,7 @@ Source6:           %{name}-shutdown
 Source7:           %{name}-limit-systemd
 Source8:           %{name}-limit-init
 Source9:           macros.%{name}
-Source10:          https://github.com/antirez/%{name}-doc/archive/%{doc_commit}/%{name}-doc-%{short_doc_commit}.tar.gz
+Source10:          https://github.com/%{gh_owner}/%{gh_project}-doc/archive/%{doc_commit}/%{name}-doc-%{short_doc_commit}.tar.gz
 
 # To refresh patches:
 # tar xf redis-xxx.tar.gz && cd redis-xxx && git init && git add . && git commit -m "%%{version} baseline"
@@ -130,7 +130,7 @@ Requires(preun):   initscripts
 Requires(postun):  initscripts
 %endif
 # from deps/hiredis/hiredis.h
-Provides:          bundled(hiredis) = 0.14.0
+Provides:          bundled(hiredis) = 1.0.0
 # from deps/lua/src/lua.h
 Provides:          bundled(lua-libs) = 5.1.5
 # from deps/linenoise/linenoise.h
@@ -485,6 +485,9 @@ fi
 
 
 %changelog
+* Tue Dec 15 2020 Remi Collet <remi@remirepo.net> - 6.2~RC1-1
+- update to 6.2-RC1 (6.1.240)
+
 * Tue Nov 24 2020 Remi Collet <remi@remirepo.net> - 6.0.9-4
 - create symlink for deployment tools
 
