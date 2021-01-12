@@ -18,25 +18,13 @@
 %bcond_with    redistrib
 %endif
 
-%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
-%bcond_without systemd
-%else
-%bcond_with    systemd
-%endif
-
-%if 0%{?fedora} >= 23 || 0%{?rhel} >= 7
-%bcond_without tls
-%else
-%bcond_with    tls
-%endif
-
 # Tests fail in mock, not in local build.
 %bcond_with    tests
 
 # Pre-version are only available in github
 %global upstream_ver 6.2
-%global upstream_pre RC1
-%global gh_commit    b8c67ce41b51247c02a639929e4fab20189afa1e
+%global upstream_pre RC2
+%global gh_commit    ec2d180739aa3877a45ec54438c68a7659be5159
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     redis
 %global gh_project   redis
@@ -44,7 +32,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit 05631514745ea9f0a2ccc8aa6286f7ce2f29b266
+%global doc_commit da92d05e9cc0f935f65392ca6daf2702f7bf70d8
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -65,11 +53,8 @@ Source0:           https://download.redis.io/releases/%{name}-%{version}.tar.gz
 Source1:           %{name}.logrotate
 Source2:           %{name}-sentinel.service
 Source3:           %{name}.service
-Source4:           %{name}-sentinel.init
-Source5:           %{name}.init
 Source6:           %{name}-shutdown
 Source7:           %{name}-limit-systemd
-Source8:           %{name}-limit-init
 Source9:           macros.%{name}
 Source10:          https://github.com/%{gh_owner}/%{gh_project}-doc/archive/%{doc_commit}/%{name}-doc-%{short_doc_commit}.tar.gz
 
@@ -81,14 +66,9 @@ Source10:          https://github.com/%{gh_owner}/%{gh_project}-doc/archive/%{do
 # Update configuration for Fedora
 # https://github.com/antirez/redis/pull/3491 - man pages
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
-# https://github.com/antirez/redis/pull/3494 - symlink
-Patch0002:         0002-install-redis-check-rdb-as-a-symlink-instead-of-dupl.patch
 
 
 BuildRequires:     gcc
-%if 0%{?rhel} == 6
-BuildRequires:  devtoolset-6-toolchain
-%endif
 %if 0%{?rhel} == 7
 BuildRequires:  devtoolset-8-toolchain
 BuildRequires:  devtoolset-8-libatomic-devel
@@ -103,13 +83,9 @@ Provides:          bundled(jemalloc) = 5.1.0
 BuildRequires:     procps-ng
 BuildRequires:     tcl
 %endif
-%if %{with systemd}
 BuildRequires:     pkgconfig(libsystemd)
 BuildRequires:     systemd
-%endif
-%if %{with tls}
 BuildRequires:     openssl-devel >= 1.0.2
-%endif
 
 %if %{without redistrib}
 Obsoletes:         redis-trib < %{version}-%{release}
@@ -119,16 +95,9 @@ Obsoletes:         redis-trib < %{version}-%{release}
 Requires:          /bin/awk
 Requires:          logrotate
 Requires(pre):     shadow-utils
-%if %{with systemd}
 Requires(post):    systemd
 Requires(preun):   systemd
 Requires(postun):  systemd
-%else
-Requires(post):    chkconfig
-Requires(preun):   chkconfig
-Requires(preun):   initscripts
-Requires(postun):  initscripts
-%endif
 # from deps/hiredis/hiredis.h
 Provides:          bundled(hiredis) = 1.0.0
 # from deps/lua/src/lua.h
@@ -207,7 +176,6 @@ and removal, status checks, resharding, rebalancing, and other operations.
 %endif
 mv ../%{name}-doc-%{doc_commit} doc
 %patch0001 -p1
-%patch0002 -p1
 
 %if %{with jemalloc}
 rm -frv deps/jemalloc
@@ -234,28 +202,14 @@ if test "$api" != "%{redis_modules_abi}"; then
    exit 1
 fi
 
-# Fix for old GCC
-%if 0%{?rhel} == 6
-sed -e '/GCC diagnostic/d' -i src/lzf_d.c
-%endif
-
 %global malloc_flags MALLOC=jemalloc
-%if %{with tls}
 %global tls_flags    BUILD_TLS=yes
-%endif
-%if %{with systemd}
 %global sysd_flags   BUILD_WITH_SYSTEMD=yes
-%endif
-
 %global make_flags	 DEBUG="" V="echo" LDFLAGS="%{?__global_ldflags}" CFLAGS+="%{optflags} -fPIC" INSTALL="install -p" PREFIX=%{buildroot}%{_prefix} %{?malloc_flags} %{?tls_flags} %{?sysd_flags}
 : %{make_flags}
 
 
 %build
-%if 0%{?rhel} == 6
-source /opt/rh/devtoolset-6/enable
-g++ --version
-%endif
 %if 0%{?rhel} == 7
 source /opt/rh/devtoolset-8/enable
 g++ --version
@@ -265,10 +219,6 @@ make %{?_smp_mflags} %{make_flags} all
 
 
 %install
-%if 0%{?rhel} == 6
-source /opt/rh/devtoolset-6/enable
-g++ --version
-%endif
 %if 0%{?rhel} == 7
 source /opt/rh/devtoolset-8/enable
 g++ --version
@@ -289,7 +239,6 @@ install -pDm644 %{S:1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -pDm640 %{name}.conf  %{buildroot}%{_sysconfdir}/%{name}/%{name}.conf
 install -pDm640 sentinel.conf %{buildroot}%{_sysconfdir}/%{name}/sentinel.conf
 
-%if %{with systemd}
 # Install systemd unit files.
 mkdir -p %{buildroot}%{_unitdir}
 install -pm644 %{S:3} %{buildroot}%{_unitdir}
@@ -298,12 +247,6 @@ install -pm644 %{S:2} %{buildroot}%{_unitdir}
 # Install systemd limit files (requires systemd >= 204)
 install -p -D -m 644 %{S:7} %{buildroot}%{_sysconfdir}/systemd/system/%{name}.service.d/limit.conf
 install -p -D -m 644 %{S:7} %{buildroot}%{_sysconfdir}/systemd/system/%{name}-sentinel.service.d/limit.conf
-%else
-# install SysV service files
-install -pDm755 %{S:4} %{buildroot}%{_initrddir}/%{name}-sentinel
-install -pDm755 %{S:5} %{buildroot}%{_initrddir}/%{name}
-install -p -D -m 644 %{S:8} %{buildroot}%{_sysconfdir}/security/limits.d/95-%{name}.conf
-%endif
 
 # Fix non-standard-executable-perm error.
 chmod 755 %{buildroot}%{_bindir}/%{name}-*
@@ -395,37 +338,17 @@ if [ -f %{_sysconfdir}/%{name}-sentinel.conf  -a ! -L %{_sysconfdir}/%{name}-sen
   mv %{_sysconfdir}/%{name}-sentinel.conf %{_sysconfdir}/%{name}/sentinel.conf
 fi
 
-%if %{with systemd}
 %systemd_post %{name}.service
 %systemd_post %{name}-sentinel.service
-%else
-chkconfig --add %{name}
-chkconfig --add %{name}-sentinel
-%endif
 
 %preun
-%if %{with systemd}
 %systemd_preun %{name}.service
 %systemd_preun %{name}-sentinel.service
-%else
-if [ $1 -eq 0 ] ; then
-    service %{name} stop &> /dev/null
-    chkconfig --del %{name} &> /dev/null
-    service %{name}-sentinel stop &> /dev/null
-    chkconfig --del %{name}-sentinel &> /dev/null
-fi
-%endif
 
 %postun
-%if %{with systemd}
 %systemd_postun_with_restart %{name}.service
 %systemd_postun_with_restart %{name}-sentinel.service
-%else
-if [ "$1" -ge "1" ] ; then
-    service %{name} condrestart >/dev/null 2>&1 || :
-    service %{name}-sentinel condrestart >/dev/null 2>&1 || :
-fi
-%endif
+
 
 %files
 %{!?_licensedir:%global license %%doc}
@@ -453,7 +376,6 @@ fi
 %{_libexecdir}/%{name}-*
 %{_mandir}/man1/%{name}*
 %{_mandir}/man5/%{name}*
-%if %{with systemd}
 %{_unitdir}/%{name}.service
 %{_unitdir}/%{name}-sentinel.service
 %dir %{_sysconfdir}/systemd/system/%{name}.service.d
@@ -461,12 +383,6 @@ fi
 %dir %{_sysconfdir}/systemd/system/%{name}-sentinel.service.d
 %config(noreplace) %{_sysconfdir}/systemd/system/%{name}-sentinel.service.d/limit.conf
 %dir %attr(0755, redis, redis) %ghost %{_localstatedir}/run/%{name}
-%else
-%{_initrddir}/%{name}
-%{_initrddir}/%{name}-sentinel
-%config(noreplace) %{_sysconfdir}/security/limits.d/95-%{name}.conf
-%dir %attr(0755, redis, redis) %{_localstatedir}/run/%{name}
-%endif
 
 %files devel
 %license COPYING
@@ -485,6 +401,9 @@ fi
 
 
 %changelog
+* Tue Dec 15 2020 Remi Collet <remi@remirepo.net> - 6.2~RC2-1
+- update to 6.2-RC2 (6.1.241)
+
 * Tue Dec 15 2020 Remi Collet <remi@remirepo.net> - 6.2~RC1-1
 - update to 6.2-RC1 (6.1.240)
 
