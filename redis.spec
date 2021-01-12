@@ -401,7 +401,7 @@ fi
 
 
 %changelog
-* Tue Dec 15 2020 Remi Collet <remi@remirepo.net> - 6.2~RC2-1
+* Tue Jan 12 2021 Remi Collet <remi@remirepo.net> - 6.2~RC2-1
 - update to 6.2-RC2 (6.1.241)
 
 * Tue Dec 15 2020 Remi Collet <remi@remirepo.net> - 6.2~RC1-1
