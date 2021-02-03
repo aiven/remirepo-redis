@@ -23,8 +23,8 @@
 
 # Pre-version are only available in github
 %global upstream_ver 6.2
-%global upstream_pre RC2
-%global gh_commit    ec2d180739aa3877a45ec54438c68a7659be5159
+%global upstream_pre RC3
+%global gh_commit    2dba1e391d3772a8da182d95bde050ffa9d01e4d
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     redis
 %global gh_project   redis
@@ -32,7 +32,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit da92d05e9cc0f935f65392ca6daf2702f7bf70d8
+%global doc_commit 89970b3057b9f9a0754c7adbcc92a80e7f568da0
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -401,6 +401,9 @@ fi
 
 
 %changelog
+* Wed Feb  3 2021 Remi Collet <remi@remirepo.net> - 6.2~RC3-1
+- update to 6.2-RC3 (6.1.242)
+
 * Tue Jan 12 2021 Remi Collet <remi@remirepo.net> - 6.2~RC2-1
 - update to 6.2-RC2 (6.1.241)
 
