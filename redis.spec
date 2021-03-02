@@ -22,7 +22,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.2.0
+%global upstream_ver 6.2.1
 #global upstream_pre RC3
 %global gh_commit    2dba1e391d3772a8da182d95bde050ffa9d01e4d
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -32,7 +32,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit e0528232fdd0d2efc91d62b798b924d716f88813
+%global doc_commit f1d54a69105cfddd6f83f1f44c5a873512a579e7
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -64,7 +64,7 @@ Source10:          https://github.com/%{gh_owner}/%{gh_project}-doc/archive/%{do
 # Then refresh your patches
 # git format-patch HEAD~<number of expected patches>
 # Update configuration for Fedora
-# https://github.com/antirez/redis/pull/3491 - man pages
+# https://github.com/redis/redis/pull/3491 - man pages
 Patch0001:         0001-1st-man-pageis-for-redis-cli-redis-benchmark-redis-c.patch
 
 
@@ -292,7 +292,7 @@ install -pDm644 %{S:9} %{buildroot}%{macrosdir}/macros.%{name}
 sed -e '/memefficiency/d' -i tests/test_helper.tcl
 %endif
 
-# https://github.com/antirez/redis/issues/1417 (for "taskset -c 1")
+# https://github.com/redis/redis/issues/1417 (for "taskset -c 1")
 taskset -c 1 make %{make_flags} test
 make %{make_flags} test-sentinel
 %else
@@ -401,6 +401,10 @@ fi
 
 
 %changelog
+* Tue Mar  2 2021 Remi Collet <remi@remirepo.net> - 6.2.1-1
+- Redis 6.2.1 - Released Mon Mar  1 17:51:36 IST 2021
+- Upgrade urgency: LOW.
+
 * Tue Feb 23 2021 Remi Collet <remi@remirepo.net> - 6.2.0-1
 - Redis 6.2.0 GA - Released Tue Feb 22 14:00:00 IST 2021
 - Upgrade urgency: SECURITY if you use 32bit build of redis,
