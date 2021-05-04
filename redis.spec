@@ -22,7 +22,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.2.2
+%global upstream_ver 6.2.3
 #global upstream_pre RC3
 %global gh_commit    2dba1e391d3772a8da182d95bde050ffa9d01e4d
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -32,7 +32,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit 42ccc962f01baad22fecd4ee1b58e1808ddc49fc
+%global doc_commit 6fca484937fe6d97e2065769a90d16b4caf9dc32
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -401,6 +401,11 @@ fi
 
 
 %changelog
+* Tue May  4 2021 Remi Collet <remi@remirepo.net> - 6.2.3-1
+- Redis 6.2.3 - Released Mon May 3 19:00:00 IST 2021
+- Upgrade urgency: SECURITY, Contains fixes to security issues that affect
+  authenticated client connections. LOW otherwise.
+
 * Tue Apr 20 2021 Remi Collet <remi@remirepo.net> - 6.2.2-1
 - Redis 6.2.2 - Released Mon April 19 19:00:00 IST 2021
 - Upgrade urgency: HIGH, if you're using ACL and pub/sub,
