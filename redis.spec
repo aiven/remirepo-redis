@@ -390,6 +390,7 @@ fi
 %{macrosdir}/*
 
 %files doc
+%license doc/LICENSE
 %docdir %{_docdir}/%{name}
 %{_docdir}/%{name}
 
