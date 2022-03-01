@@ -9,6 +9,9 @@
 #
 %global _hardened_build 1
 
+# temp workaround to https://bugzilla.redhat.com/2059488
+%undefine _package_note_file
+
 # to use system libjemalloc
 %bcond_with    jemalloc
 
@@ -409,7 +412,7 @@ fi
 
 %changelog
 * Tue Mar  1 2022 Remi Collet <remi@remirepo.net> - 7.0~RC2-1
-- update to 7.0-RC1 (6.9.241) - Released Mon Feb 28 12:00:00 IST 2022
+- update to 7.0-RC2 (6.9.241) - Released Mon Feb 28 12:00:00 IST 2022
 
 * Mon Jan 31 2022 Remi Collet <remi@remirepo.net> - 7.0~RC1-1
 - update to 7.0-RC1 (6.9.240) - Released Mon Jan 31 12:00:00 IST 2022
