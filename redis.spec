@@ -22,9 +22,9 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.2.6
-#global upstream_pre RC3
-%global gh_commit    2dba1e391d3772a8da182d95bde050ffa9d01e4d
+%global upstream_ver 7.0
+%global upstream_pre RC2
+%global gh_commit    d2b5a579dd8b785690aa7714df8776ffc452d242
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     redis
 %global gh_project   redis
@@ -32,7 +32,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit 3fdb6df44ecd5c4d99ea52a0133177f5ebc24805
+%global doc_commit a2e7f91f7e5dc3fd96487cfe39781dc3e4e70c32
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -77,7 +77,7 @@ BuildRequires:  devtoolset-8-libatomic-devel
 BuildRequires:     jemalloc-devel
 %else
 # from deps/jemalloc/VERSION
-Provides:          bundled(jemalloc) = 5.1.0
+Provides:          bundled(jemalloc) = 5.2.1
 %endif
 %if %{with tests}
 BuildRequires:     procps-ng
@@ -105,6 +105,8 @@ Provides:          bundled(lua-libs) = 5.1.5
 # from deps/linenoise/linenoise.h
 Provides:          bundled(linenoise) = 1.0
 Provides:          bundled(lzf)
+# from deps/hdr_histogram/README.md
+Provides:          bundled(hdr_histogram) = 0.11.0
 
 %global redis_modules_abi 1
 %global redis_modules_dir %{_libdir}/%{name}/modules
@@ -188,6 +190,8 @@ mv deps/jemalloc/COPYING COPYING-jemalloc
 %endif
 mv deps/lua/COPYRIGHT    COPYRIGHT-lua
 mv deps/hiredis/COPYING  COPYING-hiredis
+mv deps/hdr_histogram/LICENSE.txt LICENSE-hdrhistogram
+mv deps/hdr_histogram/COPYING.txt COPYING-hdrhistogram
 
 # Configuration file changes
 sed -i -e 's|^logfile .*$|logfile /var/log/redis/redis.log|g' redis.conf
@@ -355,6 +359,8 @@ fi
 %license COPYING
 %license COPYRIGHT-lua
 %license COPYING-hiredis
+%license LICENSE-hdrhistogram
+%license COPYING-hdrhistogram
 %if %{without jemalloc}
 %license COPYING-jemalloc
 %endif
@@ -402,6 +408,12 @@ fi
 
 
 %changelog
+* Tue Mar  1 2022 Remi Collet <remi@remirepo.net> - 7.0~RC2-1
+- update to 7.0-RC1 (6.9.241) - Released Mon Feb 28 12:00:00 IST 2022
+
+* Mon Jan 31 2022 Remi Collet <remi@remirepo.net> - 7.0~RC1-1
+- update to 7.0-RC1 (6.9.240) - Released Mon Jan 31 12:00:00 IST 2022
+
 * Mon Oct  4 2021 Remi Collet <remi@remirepo.net> - 6.2.6-1
 - Redis 6.2.6 - Released Mon Oct 4 12:00:00 IDT 2021
 - Upgrade urgency: SECURITY, contains fixes to security issues.
