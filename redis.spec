@@ -9,6 +9,9 @@
 #
 %global _hardened_build 1
 
+# temp workaround to https://bugzilla.redhat.com/2059488
+%undefine _package_note_file
+
 # to use system libjemalloc
 %bcond_with    jemalloc
 
@@ -40,7 +43,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -402,6 +405,9 @@ fi
 
 
 %changelog
+* Tue Mar 22 2022 Remi Collet <remi@remirepo.net> - 6.2.6-2
+- F36 build
+
 * Mon Oct  4 2021 Remi Collet <remi@remirepo.net> - 6.2.6-1
 - Redis 6.2.6 - Released Mon Oct 4 12:00:00 IDT 2021
 - Upgrade urgency: SECURITY, contains fixes to security issues.
