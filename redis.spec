@@ -25,7 +25,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 6.2.6
+%global upstream_ver 6.2.7
 #global upstream_pre RC3
 %global gh_commit    2dba1e391d3772a8da182d95bde050ffa9d01e4d
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -43,7 +43,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -405,6 +405,10 @@ fi
 
 
 %changelog
+* Wed Apr 27 2022 Remi Collet <remi@remirepo.net> - 6.2.7-1
+- Redis 6.2.7 - Released Wed Apr 27 12:00:00 IDT 2022
+- Upgrade urgency: SECURITY, contains fixes to security issues.
+
 * Tue Mar 22 2022 Remi Collet <remi@remirepo.net> - 6.2.6-2
 - F36 build
 
