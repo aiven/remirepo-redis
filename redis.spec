@@ -25,7 +25,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 7.0.2
+%global upstream_ver 7.0.3
 #global upstream_pre RC3
 %global gh_commit    fb4e0d400ff82117104bde5296c477ad95f8dd41
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -35,7 +35,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit af2e6f814be4cadd9b619001b0acf0754f8dd057
+%global doc_commit dd4aa508d3fbdf065c48258e86a73ed559987f38
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -279,7 +279,7 @@ ln -s redis.conf.5   %{buildroot}%{_mandir}/man5/redis-sentinel.conf.5
 
 # Install documentation and html pages
 doc=$(echo %{buildroot}/%{_docdir}/%{name})
-for page in 00-RELEASENOTES BUGS CONTRIBUTING MANIFESTO; do
+for page in 00-RELEASENOTES BUGS MANIFESTO *.md; do
     install -Dpm644 $page $doc/$page
 done
 for page in $(find doc -name \*.md | sed -e 's|.md$||g'); do
@@ -411,6 +411,11 @@ fi
 
 
 %changelog
+* Tue Jul 12 2022 Remi Collet <remi@remirepo.net> - 7.0.3-1
+- Redis 7.0.3 - Released Monday Jul 11 12:00:00 IST 2022
+- Upgrade urgency: MODERATE, specifically if you're using a previous release
+  of Redis 7.0, contains fixes for bugs in previous 7.0 releases.
+
 * Mon Jun 13 2022 Remi Collet <remi@remirepo.net> - 7.0.2-1
 - Redis 7.0.2 - Released Sunday Jun 12 12:00:00 IST 2022
 - Upgrade urgency: MODERATE, specifically if you're using a previous release of
