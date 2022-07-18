@@ -25,7 +25,7 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 7.0.3
+%global upstream_ver 7.0.4
 #global upstream_pre RC3
 %global gh_commit    fb4e0d400ff82117104bde5296c477ad95f8dd41
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
@@ -35,7 +35,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit dd4aa508d3fbdf065c48258e86a73ed559987f38
+%global doc_commit 7fa685ef79873fe362df7d6618664e37099023ca
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -411,6 +411,10 @@ fi
 
 
 %changelog
+* Mon Jul 18 2022 Remi Collet <remi@remirepo.net> - 7.0.4-1
+- Redis 7.0.4 - Released Monday Jul 18 12:00:00 IST 2022
+- Upgrade urgency: SECURITY, contains fixes to security issues.
+
 * Tue Jul 12 2022 Remi Collet <remi@remirepo.net> - 7.0.3-1
 - Redis 7.0.3 - Released Monday Jul 11 12:00:00 IST 2022
 - Upgrade urgency: MODERATE, specifically if you're using a previous release
