@@ -43,7 +43,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           1%{?dist}
+Release:           2%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -411,6 +411,11 @@ fi
 
 
 %changelog
+* Thu Sep 22 2022 Remi Collet <remi@remirepo.net> - 7.0.5-2
+- Redis 7.0.5 - Released Wed Sep 21 20:00:00 IST 2022
+- Upgrade urgency: SECURITY, contains fixes to security issues.
+- refresh documentation
+
 * Thu Sep 22 2022 Remi Collet <remi@remirepo.net> - 7.0.5-1
 - Redis 7.0.5 - Released Wed Sep 21 20:00:00 IST 2022
 - Upgrade urgency: SECURITY, contains fixes to security issues.
