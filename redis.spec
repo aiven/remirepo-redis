@@ -25,9 +25,9 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 7.0.4
+%global upstream_ver 7.0.5
 #global upstream_pre RC3
-%global gh_commit    fb4e0d400ff82117104bde5296c477ad95f8dd41
+%global gh_commit    e50ea1872e4efaf2a7174700050b7ce1c47dc2a8
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     redis
 %global gh_project   redis
@@ -411,6 +411,10 @@ fi
 
 
 %changelog
+* Thu Sep 22 2022 Remi Collet <remi@remirepo.net> - 7.0.5-1
+- Redis 7.0.5 - Released Wed Sep 21 20:00:00 IST 2022
+- Upgrade urgency: SECURITY, contains fixes to security issues.
+
 * Mon Jul 18 2022 Remi Collet <remi@remirepo.net> - 7.0.4-1
 - Redis 7.0.4 - Released Monday Jul 18 12:00:00 IST 2022
 - Upgrade urgency: SECURITY, contains fixes to security issues.
