@@ -27,7 +27,7 @@
 # Pre-version are only available in github
 %global upstream_ver 7.0.5
 #global upstream_pre RC3
-%global gh_commit    e50ea1872e4efaf2a7174700050b7ce1c47dc2a8
+%global gh_commit    fb4e0d400ff82117104bde5296c477ad95f8dd41
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     redis
 %global gh_project   redis
@@ -35,7 +35,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit 7fa685ef79873fe362df7d6618664e37099023ca
+%global doc_commit e50ea1872e4efaf2a7174700050b7ce1c47dc2a8
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
