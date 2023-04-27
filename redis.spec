@@ -25,9 +25,9 @@
 %bcond_with    tests
 
 # Pre-version are only available in github
-%global upstream_ver 7.0.5
+%global upstream_ver 7.0.11
 #global upstream_pre RC3
-%global gh_commit    fb4e0d400ff82117104bde5296c477ad95f8dd41
+%global gh_commit    391aa4079c0855aa20929b1e272403937e874d57
 %global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
 %global gh_owner     redis
 %global gh_project   redis
@@ -35,7 +35,7 @@
 # Commit IDs for the (unversioned) redis-doc repository
 # https://fedoraproject.org/wiki/Packaging:SourceURL "Commit Revision"
 # https://github.com/redis/redis-doc/commits/master
-%global doc_commit e50ea1872e4efaf2a7174700050b7ce1c47dc2a8
+%global doc_commit dbe9296f0a7c9c2a05b73c06d5774f078e68fd7e
 %global short_doc_commit %(c=%{doc_commit}; echo ${c:0:7})
 
 # %%{_rpmmacrodir} not usable on EL-6 - EL-7 (without epel-rpms-macros)
@@ -43,7 +43,7 @@
 
 Name:              redis
 Version:           %{upstream_ver}%{?upstream_pre:~%{upstream_pre}}
-Release:           2%{?dist}
+Release:           1%{?dist}
 Summary:           A persistent key-value database
 Group:             Applications/Databases
 License:           BSD
@@ -411,6 +411,10 @@ fi
 
 
 %changelog
+* Thu Apr 27 2023 Safa Topal <safa.topal@aiven.io> - 7.0.11-1
+- Redis 7.0.5 - Released Wed Apr 27 20:00:00 IST 2023
+- Upgrade urgency: SECURITY, contains fixes to security issues.
+
 * Thu Sep 22 2022 Remi Collet <remi@remirepo.net> - 7.0.5-2
 - Redis 7.0.5 - Released Wed Sep 21 20:00:00 IST 2022
 - Upgrade urgency: SECURITY, contains fixes to security issues.
